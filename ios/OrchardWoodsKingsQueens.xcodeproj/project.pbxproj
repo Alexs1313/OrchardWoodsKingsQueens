@@ -9,9 +9,19 @@
 /* Begin PBXBuildFile section */
 		0C80B921A6F3F58F76C31292 /* libPods-OrchardWoodsKingsQueens.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-OrchardWoodsKingsQueens.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		2F26F3D2161E4E92B3CA0503 /* Sansation-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7DFB8E5CB983468C84CEF1D1 /* Sansation-BoldItalic.ttf */; };
+		43FB665C96F14FBCB523556B /* Sansation-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D11EBDB84EC749C1901F3217 /* Sansation-Regular.ttf */; };
+		6FCE6FFE4DD649BF8A5802D5 /* Sansation-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DF223F3DFDAA4295ACF4DC1F /* Sansation-Bold.ttf */; };
 		705003FFB87837AE384CCDD8 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		9DCF88CB46FB46EBA02BAC99 /* Sansation-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 69712066DD714BE3B9935E2E /* Sansation-LightItalic.ttf */; };
+		D1BAE17C2F2CD2C90094EA86 /* AVFAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1BAE17B2F2CD2C90094EA86 /* AVFAudio.framework */; };
+		D1BAE17E2F2CD2CF0094EA86 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1BAE17D2F2CD2CF0094EA86 /* AudioToolbox.framework */; };
+		D1BAE1802F2CD2D60094EA86 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1BAE17F2F2CD2D60094EA86 /* AVFoundation.framework */; };
+		D1BAE1822F2CD2F60094EA86 /* medieval-kingdom-354186.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D1BAE1812F2CD2F60094EA86 /* medieval-kingdom-354186.mp3 */; };
+		DC3582952EBF464C99CAAAF6 /* Sansation-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB2CEA9F8E1E46D5B3D1199E /* Sansation-Italic.ttf */; };
+		F824442EE7E343878AF2A072 /* Sansation-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1F31EE13862C4889A3020837 /* Sansation-Light.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,11 +29,21 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = OrchardWoodsKingsQueens/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = OrchardWoodsKingsQueens/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = OrchardWoodsKingsQueens/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		1F31EE13862C4889A3020837 /* Sansation-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Sansation-Light.ttf"; path = "../assets/fonts/Sansation-Light.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-OrchardWoodsKingsQueens.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OrchardWoodsKingsQueens.debug.xcconfig"; path = "Target Support Files/Pods-OrchardWoodsKingsQueens/Pods-OrchardWoodsKingsQueens.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-OrchardWoodsKingsQueens.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OrchardWoodsKingsQueens.release.xcconfig"; path = "Target Support Files/Pods-OrchardWoodsKingsQueens/Pods-OrchardWoodsKingsQueens.release.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-OrchardWoodsKingsQueens.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OrchardWoodsKingsQueens.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		69712066DD714BE3B9935E2E /* Sansation-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Sansation-LightItalic.ttf"; path = "../assets/fonts/Sansation-LightItalic.ttf"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = OrchardWoodsKingsQueens/AppDelegate.swift; sourceTree = "<group>"; };
+		7DFB8E5CB983468C84CEF1D1 /* Sansation-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Sansation-BoldItalic.ttf"; path = "../assets/fonts/Sansation-BoldItalic.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = OrchardWoodsKingsQueens/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		D11EBDB84EC749C1901F3217 /* Sansation-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Sansation-Regular.ttf"; path = "../assets/fonts/Sansation-Regular.ttf"; sourceTree = "<group>"; };
+		D1BAE17B2F2CD2C90094EA86 /* AVFAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFAudio.framework; path = System/Library/Frameworks/AVFAudio.framework; sourceTree = SDKROOT; };
+		D1BAE17D2F2CD2CF0094EA86 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		D1BAE17F2F2CD2D60094EA86 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		D1BAE1812F2CD2F60094EA86 /* medieval-kingdom-354186.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "medieval-kingdom-354186.mp3"; sourceTree = "<group>"; };
+		DF223F3DFDAA4295ACF4DC1F /* Sansation-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Sansation-Bold.ttf"; path = "../assets/fonts/Sansation-Bold.ttf"; sourceTree = "<group>"; };
+		EB2CEA9F8E1E46D5B3D1199E /* Sansation-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Sansation-Italic.ttf"; path = "../assets/fonts/Sansation-Italic.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -32,6 +52,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D1BAE1802F2CD2D60094EA86 /* AVFoundation.framework in Frameworks */,
+				D1BAE17E2F2CD2CF0094EA86 /* AudioToolbox.framework in Frameworks */,
+				D1BAE17C2F2CD2C90094EA86 /* AVFAudio.framework in Frameworks */,
 				0C80B921A6F3F58F76C31292 /* libPods-OrchardWoodsKingsQueens.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -54,10 +77,26 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D1BAE17F2F2CD2D60094EA86 /* AVFoundation.framework */,
+				D1BAE17D2F2CD2CF0094EA86 /* AudioToolbox.framework */,
+				D1BAE17B2F2CD2C90094EA86 /* AVFAudio.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				5DCACB8F33CDC322A6C60F78 /* libPods-OrchardWoodsKingsQueens.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5812033A108641CFB56FFD0A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				7DFB8E5CB983468C84CEF1D1 /* Sansation-BoldItalic.ttf */,
+				1F31EE13862C4889A3020837 /* Sansation-Light.ttf */,
+				69712066DD714BE3B9935E2E /* Sansation-LightItalic.ttf */,
+				D11EBDB84EC749C1901F3217 /* Sansation-Regular.ttf */,
+				DF223F3DFDAA4295ACF4DC1F /* Sansation-Bold.ttf */,
+				EB2CEA9F8E1E46D5B3D1199E /* Sansation-Italic.ttf */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -75,6 +114,8 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				D1BAE1812F2CD2F60094EA86 /* medieval-kingdom-354186.mp3 */,
+				5812033A108641CFB56FFD0A /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -160,7 +201,14 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				D1BAE1822F2CD2F60094EA86 /* medieval-kingdom-354186.mp3 in Resources */,
 				705003FFB87837AE384CCDD8 /* PrivacyInfo.xcprivacy in Resources */,
+				2F26F3D2161E4E92B3CA0503 /* Sansation-BoldItalic.ttf in Resources */,
+				F824442EE7E343878AF2A072 /* Sansation-Light.ttf in Resources */,
+				9DCF88CB46FB46EBA02BAC99 /* Sansation-LightItalic.ttf in Resources */,
+				43FB665C96F14FBCB523556B /* Sansation-Regular.ttf in Resources */,
+				6FCE6FFE4DD649BF8A5802D5 /* Sansation-Bold.ttf in Resources */,
+				DC3582952EBF464C99CAAAF6 /* Sansation-Italic.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,9 +239,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-OrchardWoodsKingsQueens/Pods-OrchardWoodsKingsQueens-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-OrchardWoodsKingsQueens/Pods-OrchardWoodsKingsQueens-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -230,9 +282,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-OrchardWoodsKingsQueens/Pods-OrchardWoodsKingsQueens-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-OrchardWoodsKingsQueens/Pods-OrchardWoodsKingsQueens-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -273,7 +329,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.QueensMinnKingsWoods;
 				PRODUCT_NAME = OrchardWoodsKingsQueens;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -300,7 +356,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.QueensMinnKingsWoods;
 				PRODUCT_NAME = OrchardWoodsKingsQueens;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -376,10 +432,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -448,10 +501,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
