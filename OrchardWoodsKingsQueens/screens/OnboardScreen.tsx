@@ -1,28 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState as useStateOrchardWoods } from 'react';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import {
   Image,
   ImageBackground,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   useWindowDimensions,
   View,
 } from 'react-native';
 
-type RootStackParamList = {
+type RootStackParamListOrchardWoods = {
   HomeScreen: undefined;
 };
 
-const ongoalimages = [
+const ongoalimagesOrchardWoods = [
   require('../../assets/images/introimg1.png'),
   require('../../assets/images/introimg2.png'),
   require('../../assets/images/introimg3.png'),
   require('../../assets/images/introimg4.png'),
 ] as const;
 
-const onboardData = [
+const onboardDataOrchardWoods = [
   {
     title: 'Enter Orchard Woods',
     descr:
@@ -50,59 +49,72 @@ const onboardData = [
 ] as const;
 
 const OnboardScreen: React.FC = () => {
-  const { height } = useWindowDimensions();
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const { height: heightOrchardWoods } = useWindowDimensions();
+  const navigationOrchardWoods =
+    useNavigation<NavigationProp<RootStackParamListOrchardWoods>>();
 
-  const handleNext = () => {
-    if (currentIndex < 3) {
-      setCurrentIndex(prev => prev + 1);
+  const [currentIndexOrchardWoods, setCurrentIndexOrchardWoods] =
+    useStateOrchardWoods<number>(0);
+
+  const handleNextOrchardWoods = () => {
+    if (currentIndexOrchardWoods < 3) {
+      setCurrentIndexOrchardWoods(prev => prev + 1);
     } else {
-      navigation.navigate('HomeScreen');
+      navigationOrchardWoods.navigate('HomeScreen');
     }
   };
 
   return (
     <ImageBackground
       source={require('../../assets/images/mainappback.png')}
-      style={{ flex: 1 }}
+      style={orchardWoodsBg}
     >
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={[styles.orchcont, { paddingBottom: height * 0.05 }]}>
+        <View
+          style={[
+            orchardWoodsOrchcont,
+            { paddingBottom: heightOrchardWoods * 0.05 },
+          ]}
+        >
           <ImageBackground
             source={require('../../assets/images/onboardingboard.png')}
-            style={{
-              width: 350,
-              height: 200,
-              marginTop: 20,
-            }}
+            style={orchardWoodsBoardBg}
             resizeMode="contain"
           >
-            <View style={styles.boardContainer}>
-              <Text style={styles.boardTitle}>
-                {onboardData[currentIndex].title}
+            <View style={orchardWoodsBoardContainer}>
+              <Text style={orchardWoodsBoardTitle}>
+                {onboardDataOrchardWoods[currentIndexOrchardWoods].title}
               </Text>
-              <Text style={styles.boardText}>
-                {onboardData[currentIndex].descr}
+              <Text style={orchardWoodsBoardText}>
+                {onboardDataOrchardWoods[currentIndexOrchardWoods].descr}
               </Text>
             </View>
           </ImageBackground>
 
           <Image
-            source={ongoalimages[currentIndex]}
-            style={{ marginTop: height * 0.1, marginBottom: height * 0.12 }}
+            source={ongoalimagesOrchardWoods[currentIndexOrchardWoods]}
+            style={[
+              orchardWoodsMainImg,
+              {
+                marginTop: heightOrchardWoods * 0.1,
+                marginBottom: heightOrchardWoods * 0.12,
+              },
+            ]}
           />
 
-          <TouchableOpacity activeOpacity={0.7} onPress={handleNext}>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={handleNextOrchardWoods}
+          >
             <ImageBackground
               source={require('../../assets/images/introBtn.png')}
-              style={styles.orchnextbtn}
+              style={orchardWoodsOrchnextbtn}
             >
-              <Text style={styles.nextbtntext}>
-                {onboardData[currentIndex].buttonLabel}
+              <Text style={orchardWoodsNextbtntext}>
+                {onboardDataOrchardWoods[currentIndexOrchardWoods].buttonLabel}
               </Text>
             </ImageBackground>
           </TouchableOpacity>
@@ -112,41 +124,53 @@ const OnboardScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  orchcont: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  boardContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 30,
-  },
-  boardTitle: {
-    fontSize: 22,
-    color: '#fff',
-    marginBottom: 20,
-    fontFamily: 'Sansation-Bold',
-  },
-  boardText: {
-    fontSize: 20,
-    color: '#fff',
-    textAlign: 'center',
-    fontFamily: 'Sansation-Regular',
-  },
-  orchnextbtn: {
-    width: 111,
-    height: 46,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 40,
-  },
-  nextbtntext: {
-    fontSize: 18,
-    color: '#fff',
-    fontFamily: 'Sansation-Bold',
-  },
-});
+const orchardWoodsBg = { flex: 1 };
 
+const orchardWoodsOrchcont = {
+  flex: 1,
+  justifyContent: 'flex-end' as const,
+  alignItems: 'center' as const,
+};
+
+const orchardWoodsBoardBg = {
+  width: 350,
+  height: 200,
+  marginTop: 20,
+};
+
+const orchardWoodsBoardContainer = {
+  justifyContent: 'center' as const,
+  alignItems: 'center' as const,
+  padding: 30,
+};
+
+const orchardWoodsBoardTitle = {
+  fontSize: 22,
+  color: '#fff',
+  marginBottom: 20,
+  fontFamily: 'Sansation-Bold',
+};
+
+const orchardWoodsBoardText = {
+  fontSize: 20,
+  color: '#fff',
+  textAlign: 'center' as const,
+  fontFamily: 'Sansation-Regular',
+};
+
+const orchardWoodsOrchnextbtn = {
+  width: 111,
+  height: 46,
+  justifyContent: 'center' as const,
+  alignItems: 'center' as const,
+  marginTop: 40,
+};
+
+const orchardWoodsNextbtntext = {
+  fontSize: 18,
+  color: '#fff',
+  fontFamily: 'Sansation-Bold',
+};
+
+const orchardWoodsMainImg = {};
 export default OnboardScreen;

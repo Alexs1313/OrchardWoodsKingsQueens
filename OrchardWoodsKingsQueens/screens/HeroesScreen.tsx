@@ -1,10 +1,8 @@
-// src/screens/HeroesScreen.tsx
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Image,
   ImageBackground,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   Vibration,
@@ -21,118 +19,169 @@ import Toast from 'react-native-toast-message';
 import { HEROES, type Hero, type HeroId } from '../data/heroes';
 import { useStore } from '../store/context';
 
-type RootStackParamList = {
+type RootStackParamListOrchardWoods = {
   HomeScreen: undefined;
   HeroesScreen: undefined;
   Game: { level: number };
 };
 
-const COINS_KEY = 'BK_COINS_V1';
-const HERO_STATE_KEY = 'BK_HERO_STATE_V1';
+const COINS_KEY_ORCHARD_WOODS = 'BK_COINS_V1';
+const HERO_STATE_KEY_ORCHARD_WOODS = 'BK_HERO_STATE_V1';
 
-type HeroState = {
+type HeroStateOrchardWoods = {
   owned: Record<HeroId, boolean>;
   selected: HeroId;
 };
 
-const defaultHeroState: HeroState = {
+const defaultHeroStateOrchardWoods: HeroStateOrchardWoods = {
   owned: { rowan: true, elowen: false, bramble: false, nylara: false },
   selected: 'rowan',
 };
 
 export default function HeroesScreen() {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const navigationOrchardWoods =
+    useNavigation<NavigationProp<RootStackParamListOrchardWoods>>();
 
-  const [coins, setCoins] = useState<number>(0);
-  const [index, setIndex] = useState<number>(0);
-  const [heroState, setHeroState] = useState<HeroState>(defaultHeroState);
+  const [coinsOrchardWoods, setCoinsOrchardWoods] = useState<number>(0);
+  const [indexOrchardWoods, setIndexOrchardWoods] = useState<number>(0);
+  const [heroStateOrchardWoods, setHeroStateOrchardWoods] =
+    useState<HeroStateOrchardWoods>(defaultHeroStateOrchardWoods);
 
-  const { isEnabledVibration } = useStore(); // to re-render on store changes
-  const hero: Hero = useMemo(() => HEROES[index], [index]);
-  const owned = !!heroState.owned[hero.id];
-  const isUsing = heroState.selected === hero.id;
-  const canBuy = coins >= hero.price;
+  const { isEnabledVibration: isEnabledVibrationOrchardWoods } = useStore(); // to re-render on store changes
 
-  useFocusEffect(
-    useCallback(() => {
-      load();
-    }, [load]),
+  const heroOrchardWoods: Hero = useMemo(
+    () => HEROES[indexOrchardWoods],
+    [indexOrchardWoods],
   );
 
-  const load = useCallback(async () => {
+  const ownedOrchardWoods = !!heroStateOrchardWoods.owned[heroOrchardWoods.id];
+  const isUsingOrchardWoods =
+    heroStateOrchardWoods.selected === heroOrchardWoods.id;
+  const canBuyOrchardWoods = coinsOrchardWoods >= heroOrchardWoods.price;
+
+  const loadOrchardWoods = useCallback(async () => {
     try {
-      const rawCoins = await AsyncStorage.getItem(COINS_KEY);
-      setCoins(rawCoins ? Number(JSON.parse(rawCoins)) || 0 : 0);
+      const rawCoinsOrchardWoods = await AsyncStorage.getItem(
+        COINS_KEY_ORCHARD_WOODS,
+      );
+      setCoinsOrchardWoods(
+        rawCoinsOrchardWoods
+          ? Number(JSON.parse(rawCoinsOrchardWoods)) || 0
+          : 0,
+      );
     } catch {}
 
     try {
-      const raw = await AsyncStorage.getItem(HERO_STATE_KEY);
-      if (!raw) {
-        setHeroState(defaultHeroState);
+      const rawOrchardWoods = await AsyncStorage.getItem(
+        HERO_STATE_KEY_ORCHARD_WOODS,
+      );
+      if (!rawOrchardWoods) {
+        setHeroStateOrchardWoods(defaultHeroStateOrchardWoods);
         return;
       }
-      const parsed = JSON.parse(raw) as Partial<HeroState>;
-      setHeroState({
-        owned: { ...defaultHeroState.owned, ...(parsed.owned || {}) } as any,
-        selected: (parsed.selected as HeroId) || defaultHeroState.selected,
+
+      const parsedOrchardWoods = JSON.parse(
+        rawOrchardWoods,
+      ) as Partial<HeroStateOrchardWoods>;
+
+      setHeroStateOrchardWoods({
+        owned: {
+          ...defaultHeroStateOrchardWoods.owned,
+          ...(parsedOrchardWoods.owned || {}),
+        } as any,
+        selected:
+          (parsedOrchardWoods.selected as HeroId) ||
+          defaultHeroStateOrchardWoods.selected,
       });
     } catch {
-      setHeroState(defaultHeroState);
+      setHeroStateOrchardWoods(defaultHeroStateOrchardWoods);
     }
   }, []);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useFocusEffect(
+    useCallback(() => {
+      loadOrchardWoods();
+    }, [loadOrchardWoods]),
+  );
 
-  const persist = async (next: { coins?: number; heroState?: HeroState }) => {
-    const ops: Promise<any>[] = [];
-    if (typeof next.coins === 'number') {
-      ops.push(AsyncStorage.setItem(COINS_KEY, JSON.stringify(next.coins)));
-    }
-    if (next.heroState) {
-      ops.push(
-        AsyncStorage.setItem(HERO_STATE_KEY, JSON.stringify(next.heroState)),
+  useEffect(() => {
+    loadOrchardWoods();
+  }, [loadOrchardWoods]);
+
+  const persistOrchardWoods = async (nextOrchardWoods: {
+    coins?: number;
+    heroState?: HeroStateOrchardWoods;
+  }) => {
+    const opsOrchardWoods: Promise<any>[] = [];
+
+    if (typeof nextOrchardWoods.coins === 'number') {
+      opsOrchardWoods.push(
+        AsyncStorage.setItem(
+          COINS_KEY_ORCHARD_WOODS,
+          JSON.stringify(nextOrchardWoods.coins),
+        ),
       );
     }
+
+    if (nextOrchardWoods.heroState) {
+      opsOrchardWoods.push(
+        AsyncStorage.setItem(
+          HERO_STATE_KEY_ORCHARD_WOODS,
+          JSON.stringify(nextOrchardWoods.heroState),
+        ),
+      );
+    }
+
     try {
-      await Promise.all(ops);
+      await Promise.all(opsOrchardWoods);
     } catch {}
   };
 
-  const goPrev = () => setIndex(i => (i - 1 + HEROES.length) % HEROES.length);
-  const goNext = () => setIndex(i => (i + 1) % HEROES.length);
-
-  const setUsing = async (id: HeroId) => {
-    const nextState: HeroState = { ...heroState, selected: id };
-    setHeroState(nextState);
-    await persist({ heroState: nextState });
+  const goPrevOrchardWoods = () => {
+    setIndexOrchardWoods(i => (i - 1 + HEROES.length) % HEROES.length);
   };
 
-  const buyHero = async () => {
-    if (hero.price <= 0) {
-      return setUsing(hero.id);
+  const goNextOrchardWoods = () => {
+    setIndexOrchardWoods(i => (i + 1) % HEROES.length);
+  };
+
+  const setUsingOrchardWoods = async (idOrchardWoods: HeroId) => {
+    const nextStateOrchardWoods: HeroStateOrchardWoods = {
+      ...heroStateOrchardWoods,
+      selected: idOrchardWoods,
+    };
+
+    setHeroStateOrchardWoods(nextStateOrchardWoods);
+    await persistOrchardWoods({ heroState: nextStateOrchardWoods });
+  };
+
+  const buyHeroOrchardWoods = async () => {
+    if (heroOrchardWoods.price <= 0) {
+      return setUsingOrchardWoods(heroOrchardWoods.id);
     }
 
-    if (!canBuy) {
-      isEnabledVibration && Vibration.vibrate(200);
-
+    if (!canBuyOrchardWoods) {
+      isEnabledVibrationOrchardWoods && Vibration.vibrate(200);
       return;
     }
 
-    const nextCoins = coins - hero.price;
-    const nextState: HeroState = {
-      owned: { ...heroState.owned, [hero.id]: true },
-      selected: hero.id,
+    const nextCoinsOrchardWoods = coinsOrchardWoods - heroOrchardWoods.price;
+    const nextStateOrchardWoods: HeroStateOrchardWoods = {
+      owned: { ...heroStateOrchardWoods.owned, [heroOrchardWoods.id]: true },
+      selected: heroOrchardWoods.id,
     };
 
-    setCoins(nextCoins);
-    setHeroState(nextState);
-    await persist({ coins: nextCoins, heroState: nextState });
+    setCoinsOrchardWoods(nextCoinsOrchardWoods);
+    setHeroStateOrchardWoods(nextStateOrchardWoods);
+
+    await persistOrchardWoods({
+      coins: nextCoinsOrchardWoods,
+      heroState: nextStateOrchardWoods,
+    });
 
     Toast.show({
       type: 'success',
-      text1: `Purchased ${hero.name}!`,
+      text1: `Purchased ${heroOrchardWoods.name}!`,
       position: 'top',
       visibilityTime: 1500,
     });
@@ -141,108 +190,129 @@ export default function HeroesScreen() {
   return (
     <ImageBackground
       source={require('../../assets/images/mainappback.png')}
-      style={s.bg}
+      style={orchardWoodsBg}
       resizeMode="cover"
     >
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={s.topCoins}>
+        <View style={orchardWoodsTopCoins}>
           <Image source={require('../../assets/images/coin.png')} />
-          <Text style={s.topCoinsText}>x {coins}</Text>
+          <Text style={orchardWoodsTopCoinsText}>x {coinsOrchardWoods}</Text>
         </View>
 
-        <View style={s.center}>
+        <View style={orchardWoodsCenter}>
           <TouchableOpacity
             activeOpacity={0.85}
-            onPress={goPrev}
-            style={s.arrowL}
+            onPress={goPrevOrchardWoods}
+            style={orchardWoodsArrowL}
           >
             <Image source={require('../../assets/images/arrow_left.png')} />
           </TouchableOpacity>
 
           <ImageBackground
             source={require('../../assets/images/heroCardBoard.png')}
-            style={[s.card, !owned && hero.price > 0 && { marginTop: 69 }]}
+            style={[
+              orchardWoodsCard,
+              !ownedOrchardWoods &&
+                heroOrchardWoods.price > 0 && { marginTop: 69 },
+            ]}
             resizeMode="stretch"
           >
-            <Text style={s.title}>{hero.name}</Text>
+            <Text style={orchardWoodsTitle}>{heroOrchardWoods.name}</Text>
 
-            <View style={s.heroWrap}>
+            <View style={orchardWoodsHeroWrap}>
               <Image
-                source={hero.image}
-                style={s.heroImg}
+                source={heroOrchardWoods.image}
+                style={orchardWoodsHeroImg}
                 resizeMode="contain"
               />
             </View>
 
-            <View style={s.stats}>
-              <View style={s.row}>
+            <View style={orchardWoodsStats}>
+              <View style={orchardWoodsRow}>
                 <Image source={require('../../assets/images/heart.png')} />
-                <Text style={s.statText}>x {hero.lives}</Text>
+                <Text style={orchardWoodsStatText}>
+                  x {heroOrchardWoods.lives}
+                </Text>
               </View>
 
-              <View style={s.row}>
-                <Text style={s.statLabel}>Bonus:</Text>
+              <View style={orchardWoodsRow}>
+                <Text style={orchardWoodsStatLabel}>Bonus:</Text>
                 <Image source={require('../../assets/images/coin.png')} />
-                <Text style={s.statText}>x {hero.fixedBonusCoins}</Text>
+                <Text style={orchardWoodsStatText}>
+                  x {heroOrchardWoods.fixedBonusCoins}
+                </Text>
               </View>
 
-              <Text style={s.fortune}>Royal Fortune: {hero.royalFortune}%</Text>
+              <Text style={orchardWoodsFortune}>
+                Royal Fortune: {heroOrchardWoods.royalFortune}%
+              </Text>
             </View>
           </ImageBackground>
 
           <TouchableOpacity
             activeOpacity={0.85}
-            onPress={goNext}
-            style={s.arrowR}
+            onPress={goNextOrchardWoods}
+            style={orchardWoodsArrowR}
           >
             <Image source={require('../../assets/images/arrow_right.png')} />
           </TouchableOpacity>
-          {!owned && hero.price > 0 && (
+
+          {!ownedOrchardWoods && heroOrchardWoods.price > 0 && (
             <ImageBackground
               source={require('../../assets/images/pricepill.png')}
-              style={s.pricePill}
+              style={orchardWoodsPricePill}
               resizeMode="stretch"
             >
-              <Text style={s.priceText}>x {hero.price}</Text>
+              <Text style={orchardWoodsPriceText}>
+                x {heroOrchardWoods.price}
+              </Text>
             </ImageBackground>
           )}
         </View>
 
-        <View style={s.bottom}>
-          {owned ? (
+        <View style={orchardWoodsBottom}>
+          {ownedOrchardWoods ? (
             <ImageBackground
               source={require('../../assets/images/introBtn.png')}
-              style={s.bottomBtn}
+              style={orchardWoodsBottomBtn}
               resizeMode="stretch"
             >
               <TouchableOpacity
                 activeOpacity={0.9}
-                onPress={() => setUsing(hero.id)}
-                disabled={isUsing}
-                style={s.btnTapFill}
+                onPress={() => setUsingOrchardWoods(heroOrchardWoods.id)}
+                disabled={isUsingOrchardWoods}
+                style={orchardWoodsBtnTapFill}
               >
-                <Text style={[s.bottomBtnText, isUsing && { opacity: 0.8 }]}>
-                  {isUsing ? 'Using' : 'Use'}
+                <Text
+                  style={[
+                    orchardWoodsBottomBtnText,
+                    isUsingOrchardWoods && { opacity: 0.8 },
+                  ]}
+                >
+                  {isUsingOrchardWoods ? 'Using' : 'Use'}
                 </Text>
               </TouchableOpacity>
             </ImageBackground>
           ) : (
             <ImageBackground
               source={require('../../assets/images/introBtn.png')}
-              style={[s.bottomBtn, !canBuy && { opacity: 0.5 }]}
+              style={[
+                orchardWoodsBottomBtn,
+                !canBuyOrchardWoods && { opacity: 0.5 },
+              ]}
               resizeMode="stretch"
             >
               <TouchableOpacity
                 activeOpacity={0.9}
-                onPress={buyHero}
-                disabled={!canBuy && hero.price > 0}
-                style={s.btnTapFill}
+                onPress={buyHeroOrchardWoods}
+                disabled={!canBuyOrchardWoods && heroOrchardWoods.price > 0}
+                style={orchardWoodsBtnTapFill}
               >
-                <Text style={s.bottomBtnText}>
-                  {hero.price === 0 ? 'Use' : 'Get'}
+                <Text style={orchardWoodsBottomBtnText}>
+                  {heroOrchardWoods.price === 0 ? 'Use' : 'Get'}
                 </Text>
               </TouchableOpacity>
             </ImageBackground>
@@ -250,7 +320,7 @@ export default function HeroesScreen() {
 
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => navigation.goBack()}
+            onPress={() => navigationOrchardWoods.goBack()}
             style={{ marginTop: 15 }}
           >
             <Image source={require('../../assets/images/homebtn.png')} />
@@ -261,120 +331,130 @@ export default function HeroesScreen() {
   );
 }
 
-const s = StyleSheet.create({
-  bg: { flex: 1 },
-  topCoins: {
-    position: 'absolute',
-    top: 40,
-    right: 22,
-    flexDirection: 'row',
-    alignItems: 'center',
-    zIndex: 50,
-  },
-  topCoinsText: {
-    color: '#FFFFFF',
-    fontFamily: 'Sansation-Bold',
-    fontSize: 20,
-    marginLeft: 8,
-    textShadowColor: '#00000090',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 6,
-  },
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 10,
-  },
-  arrowL: { position: 'absolute', left: 18 },
-  arrowR: { position: 'absolute', right: 18 },
-  card: {
-    width: 250,
-    height: 399,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: 30,
-  },
-  titleBar: {
-    width: 250,
-    height: 56,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 5,
-  },
-  title: {
-    color: '#FFFFFF',
-    fontFamily: 'Sansation-Bold',
-    fontSize: 22,
-    marginBottom: 10,
-  },
-  heroWrap: {
-    height: 210,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  heroImg: { width: 106, height: 190 },
-  stats: {
-    alignItems: 'center',
-    marginTop: 2,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 2,
-  },
-  statLabel: {
-    color: '#FFFFFF',
-    fontFamily: 'Sansation-Bold',
-    fontSize: 17,
-    marginRight: 8,
-  },
-  statText: {
-    color: '#FFFFFF',
-    fontFamily: 'Sansation-Bold',
-    fontSize: 18,
-    marginLeft: 8,
-  },
-  fortune: {
-    color: '#FFFFFF',
-    fontFamily: 'Sansation-Bold',
-    fontSize: 18,
-    marginTop: 8,
-  },
-  pricePill: {
-    height: 42,
-    width: 115,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    marginTop: 30,
-  },
-  priceText: {
-    color: '#FFFFFF',
-    fontFamily: 'Sansation-Bold',
-    fontSize: 18,
-    marginLeft: 8,
-  },
-  bottom: {
-    paddingBottom: 34,
-    alignItems: 'center',
-    marginTop: 30,
-  },
-  bottomBtn: {
-    width: 110,
-    height: 45,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  btnTapFill: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  bottomBtnText: {
-    color: '#FFFFFF',
-    fontFamily: 'Sansation-Bold',
-    fontSize: 22,
-  },
-});
+const orchardWoodsBg = { flex: 1 };
+
+const orchardWoodsTopCoins = {
+  position: 'absolute' as const,
+  top: 40,
+  right: 22,
+  flexDirection: 'row' as const,
+  alignItems: 'center' as const,
+  zIndex: 50,
+};
+
+const orchardWoodsTopCoinsText = {
+  color: '#FFFFFF',
+  fontFamily: 'Sansation-Bold',
+  fontSize: 20,
+  marginLeft: 8,
+  textShadowColor: '#00000090',
+  textShadowOffset: { width: 0, height: 2 },
+  textShadowRadius: 6,
+};
+
+const orchardWoodsCenter = {
+  flex: 1,
+  alignItems: 'center' as const,
+  justifyContent: 'center' as const,
+  marginTop: 10,
+};
+
+const orchardWoodsArrowL = { position: 'absolute' as const, left: 18 };
+const orchardWoodsArrowR = { position: 'absolute' as const, right: 18 };
+
+const orchardWoodsCard = {
+  width: 250,
+  height: 399,
+  alignItems: 'center' as const,
+  justifyContent: 'flex-start' as const,
+  paddingTop: 30,
+};
+
+const orchardWoodsTitle = {
+  color: '#FFFFFF',
+  fontFamily: 'Sansation-Bold',
+  fontSize: 22,
+  marginBottom: 10,
+};
+
+const orchardWoodsHeroWrap = {
+  height: 210,
+  alignItems: 'center' as const,
+  justifyContent: 'center' as const,
+};
+
+const orchardWoodsHeroImg = { width: 106, height: 190 };
+
+const orchardWoodsStats = {
+  alignItems: 'center' as const,
+  marginTop: 2,
+};
+
+const orchardWoodsRow = {
+  flexDirection: 'row' as const,
+  alignItems: 'center' as const,
+  marginTop: 2,
+};
+
+const orchardWoodsStatLabel = {
+  color: '#FFFFFF',
+  fontFamily: 'Sansation-Bold',
+  fontSize: 17,
+  marginRight: 8,
+};
+
+const orchardWoodsStatText = {
+  color: '#FFFFFF',
+  fontFamily: 'Sansation-Bold',
+  fontSize: 18,
+  marginLeft: 8,
+};
+
+const orchardWoodsFortune = {
+  color: '#FFFFFF',
+  fontFamily: 'Sansation-Bold',
+  fontSize: 18,
+  marginTop: 8,
+};
+
+const orchardWoodsPricePill = {
+  height: 42,
+  width: 115,
+  alignItems: 'center' as const,
+  justifyContent: 'center' as const,
+  flexDirection: 'row' as const,
+  marginTop: 30,
+};
+
+const orchardWoodsPriceText = {
+  color: '#FFFFFF',
+  fontFamily: 'Sansation-Bold',
+  fontSize: 18,
+  marginLeft: 8,
+};
+
+const orchardWoodsBottom = {
+  paddingBottom: 34,
+  alignItems: 'center' as const,
+  marginTop: 30,
+};
+
+const orchardWoodsBottomBtn = {
+  width: 110,
+  height: 45,
+  alignItems: 'center' as const,
+  justifyContent: 'center' as const,
+};
+
+const orchardWoodsBtnTapFill = {
+  width: '100%',
+  height: '100%',
+  alignItems: 'center' as const,
+  justifyContent: 'center' as const,
+};
+
+const orchardWoodsBottomBtnText = {
+  color: '#FFFFFF',
+  fontFamily: 'Sansation-Bold',
+  fontSize: 22,
+};
