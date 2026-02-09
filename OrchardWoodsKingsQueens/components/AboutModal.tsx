@@ -16,14 +16,14 @@ const AboutModal: React.FC<AboutModalProps> = ({
       <View style={styles.modalBackdrop}>
         <NeonModalTall title="About App" onClose={() => setRulesVisible(false)}>
           <Text style={styles.rulesText}>
-            Guide the ball from the top of the field to the goal at the bottom
-            by tapping on the round grass platforms. Some platforms contain
-            hidden spikes. If you step on one, the ball pops and the level
-            restarts. After you safely pass a row, all spikes in that row are
-            revealed. Use this information to remember where the traps are and
-            choose a safe path forward. Every row always has at least one safe
-            platform, so each level can be completed. Your task is to avoid the
-            spikes, reach the goal, and unlock the next level.
+            Welcome to QueensMinn: Kings Woods — a cozy fantasy adventure where
+            every journey is a new story. Choose your hero, explore the Berry
+            Kingdom, and face unexpected moments across 10 steps. Each step
+            brings a random event: sometimes luck is on your side, sometimes
+            you’ll need to stay strong and continue. Collect coins, unlock new
+            heroes with better bonuses, and complete the artifact collection by
+            finding all pieces of the kingdom’s hidden images. Relax, enjoy the
+            atmosphere, and see how far your hero can go in the enchanted woods.
           </Text>
         </NeonModalTall>
       </View>

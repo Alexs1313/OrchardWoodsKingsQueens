@@ -25,7 +25,7 @@ const onboardDataOrchardWoods = [
   {
     title: 'Enter Orchard Woods',
     descr:
-      'Step into a magical berry forest where every run feels like a new story.',
+      'Step into a fairytale berry forest where glowing branches hide gentle magic.',
     buttonLabel: 'Next',
   },
   {

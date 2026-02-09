@@ -45,6 +45,8 @@ function randomDifficultyOrchardWoods(): DifficultyOrchardWoods {
 }
 
 const STORAGE_TOTAL_COINS_ORCHARD_WOODS = 'BK_COINS_V1';
+const STORAGE_TOTAL_WINS_ORCHARD_WOODS = 'BK_WINS_V1';
+
 const HERO_STATE_KEY_ORCHARD_WOODS = 'BK_HERO_STATE_V1';
 
 const HERO_INDEX_ORCHARD_WOODS: Record<HeroId, number> = {
@@ -106,6 +108,26 @@ function calcOutcomeOrchardWoods(d: DifficultyOrchardWoods, roll: number) {
   return 'good' as const;
 }
 
+async function getWinsOrchardWoods() {
+  const raw = await AsyncStorage.getItem(STORAGE_TOTAL_WINS_ORCHARD_WOODS);
+  const n = raw ? Number(JSON.parse(raw)) : 0;
+  return Number.isFinite(n) ? n : 0;
+}
+
+async function addWinOrchardWoods() {
+  const current = await getWinsOrchardWoods();
+  const next = current + 1;
+  await AsyncStorage.setItem(
+    STORAGE_TOTAL_WINS_ORCHARD_WOODS,
+    JSON.stringify(next),
+  );
+  return next;
+}
+
+function rankIndexFromWinsOrchardWoods(wins: number) {
+  return Math.floor(wins / 5);
+}
+
 export default function GameScreen() {
   const navigationOrchardWoods =
     useNavigation<NavigationProp<RootStackParamListOrchardWoods>>();
@@ -147,6 +169,9 @@ export default function GameScreen() {
     useState(false);
 
   const [roundEndVisibleOrchardWoods, setRoundEndVisibleOrchardWoods] =
+    useState(false);
+
+  const [rankUpVisibleOrchardWoods, setRankUpVisibleOrchardWoods] =
     useState(false);
 
   const [roundEndTitleOrchardWoods, setRoundEndTitleOrchardWoods] =
@@ -191,9 +216,7 @@ export default function GameScreen() {
             setSelectedHeroIdOrchardWoods('rowan');
             setLivesOrchardWoods(HEROES[0].lives);
           }
-        } catch {
-          console.log('catch errror');
-        }
+        } catch {}
       };
 
       void loadSelectedHeroOrchardWoods();
@@ -287,14 +310,46 @@ export default function GameScreen() {
 
       if (finishedOrchardWoods) {
         const fixedBonusOrchardWoods = heroOrchardWoods.fixedBonusCoins;
-        const winBonusOrchardWoods =
-          stepOrchardWoods === 10 && nextLivesOrchardWoods >= 1 ? 5 : 0;
+        const isWinOrchardWoods =
+          stepOrchardWoods === 10 && nextLivesOrchardWoods >= 1;
+
+        const winBonusOrchardWoods = isWinOrchardWoods ? 5 : 0;
+
+        let rankedUpBonusCoinsOrchardWoods = 0;
+
+        if (isWinOrchardWoods) {
+          try {
+            const prevWins = await getWinsOrchardWoods();
+            const prevRank = rankIndexFromWinsOrchardWoods(prevWins);
+
+            const nextWins = await addWinOrchardWoods();
+            const nextRank = rankIndexFromWinsOrchardWoods(nextWins);
+
+            if (nextRank > prevRank) {
+              rankedUpBonusCoinsOrchardWoods = 3;
+
+              const rawCoins = await AsyncStorage.getItem(
+                STORAGE_TOTAL_COINS_ORCHARD_WOODS,
+              );
+              const curCoins = rawCoins ? Number(JSON.parse(rawCoins)) : 0;
+              const safeCoins = Number.isFinite(curCoins) ? curCoins : 0;
+
+              await AsyncStorage.setItem(
+                STORAGE_TOTAL_COINS_ORCHARD_WOODS,
+                JSON.stringify(safeCoins + rankedUpBonusCoinsOrchARD_WOODS),
+              );
+
+              setRankUpVisibleOrchardWoods(true);
+            }
+          } catch {}
+        }
 
         const totalAddedOrchardWoods =
           runCoinsOrchardWoods +
           coinsDeltaOrchardWoods +
           fixedBonusOrchardWoods +
-          winBonusOrchardWoods;
+          winBonusOrchardWoods +
+          rankedUpBonusCoinsOrchardWoods;
 
         try {
           const rawOrchardWoods = await AsyncStorage.getItem(
@@ -562,6 +617,7 @@ export default function GameScreen() {
           )}
         </View>
 
+        {/* Leave modal */}
         <Modal
           visible={leaveVisibleOrchardWoods}
           transparent
@@ -604,6 +660,48 @@ export default function GameScreen() {
           </View>
         </Modal>
 
+        {/* Rank up modal */}
+        <Modal
+          visible={rankUpVisibleOrchardWoods}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setRankUpVisibleOrchardWoods(false)}
+        >
+          <View style={orchardWoodsModalBackdrop}>
+            <ImageBackground
+              source={require('../../assets/images/winmodal.png')}
+              style={orchardWoodsRankUpModal}
+              resizeMode="stretch"
+            >
+              <Text style={orchardWoodsResultTitle}>Rank Up!</Text>
+              <Text style={orchardWoodsResultBody}>
+                You earned a crown bonus.
+              </Text>
+
+              <View style={orchardWoodsResultCoinsRow}>
+                <Image source={require('../../assets/images/coin.png')} />
+                <Text style={orchardWoodsResultCoinsText}>{`x ${3}`}</Text>
+              </View>
+
+              <View style={{ height: 16 }} />
+
+              <TouchableOpacity
+                activeOpacity={0.9}
+                onPress={() => setRankUpVisibleOrchardWoods(false)}
+              >
+                <ImageBackground
+                  source={require('../../assets/images/introBtn.png')}
+                  style={orchardWoodsMainBtn}
+                  resizeMode="stretch"
+                >
+                  <Text style={orchardWoodsMainBtnText}>OK</Text>
+                </ImageBackground>
+              </TouchableOpacity>
+            </ImageBackground>
+          </View>
+        </Modal>
+
+        {/* Round end modal */}
         <Modal
           visible={roundEndVisibleOrchardWoods}
           transparent
@@ -632,9 +730,9 @@ export default function GameScreen() {
                 {livesOrchardWoods <= 0 ? (
                   <Text style={orchardWoodsResultCoinsText}>{`x ${2}`}</Text>
                 ) : (
-                  <Text
-                    style={orchardWoodsResultCoinsText}
-                  >{`x ${roundEndCoinsOrchardWoods}`}</Text>
+                  <Text style={orchardWoodsResultCoinsText}>
+                    {`x ${roundEndCoinsOrchardWoods}`}
+                  </Text>
                 )}
               </View>
 
@@ -852,6 +950,14 @@ const orchardWoodsLeaveIconBtn = {
 const orchardWoodsResultModal = {
   width: 307,
   height: 297,
+  alignItems: 'center' as const,
+  paddingHorizontal: 22,
+  paddingTop: 35,
+};
+
+const orchardWoodsRankUpModal = {
+  width: 307,
+  height: 260,
   alignItems: 'center' as const,
   paddingHorizontal: 22,
   paddingTop: 35,
