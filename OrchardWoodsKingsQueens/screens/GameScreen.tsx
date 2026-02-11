@@ -6,7 +6,9 @@ import React, {
   useState,
 } from 'react';
 import {
+  Animated as RNAnimated,
   BackHandler,
+  Easing,
   Image,
   ImageBackground,
   Modal,
@@ -81,11 +83,42 @@ const DIFF_ORCHARD_WOODS = {
   },
 };
 
+const DICE_UNKNOWN_ORCHARD_WOODS = require('../../assets/images/cubquest.png');
+const DICE_FACE_ASSETS_ORCHARD_WOODS: Record<1 | 2 | 3 | 4 | 5 | 6, any> = {
+  1: require('../../assets/images/cub1.png'),
+  2: require('../../assets/images/cub2.png'),
+  3: require('../../assets/images/cub3.png'),
+  4: require('../../assets/images/cub4.png'),
+  5: require('../../assets/images/cub5.png'),
+  6: require('../../assets/images/cub6.png'),
+};
+
+const SCALE_BAR_EASY_ORCHARD_WOODS = require('../../assets/images/bar1.png');
+const SCALE_BAR_MEDIUM_ORCHARD_WOODS = require('../../assets/images/bar2.png');
+const SCALE_BAR_HARD_ORCHARD_WOODS = require('../../assets/images/bar3.png');
+
+const SCALE_RUNNER_MARKER_ORCHARD_WOODS = require('../../assets/images/runner.png');
+
+const MODE_SAFE_BUTTON_ORCHARD_WOODS = require('../../assets/images/introBtn.png');
+const MODE_RISK_BUTTON_ORCHARD_WOODS = require('../../assets/images/safe.png');
+
 function pickRandomOrchardWoods<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
-function rollD10OrchardWoods() {
-  return Math.floor(Math.random() * 10) + 1;
+function rollD6OrchardWoods() {
+  return Math.floor(Math.random() * 6) + 1;
+}
+
+const ORCHARD_WOODS_SCALE_BAR_WIDTH = 300;
+
+function getScaleLayoutOrchardWoods(dice: number): {
+  green: number;
+  yellow: number;
+  red: number;
+} {
+  if (dice <= 2) return { green: 38, yellow: 36, red: 26 };
+  if (dice <= 4) return { green: 33, yellow: 34, red: 33 };
+  return { green: 26, yellow: 36, red: 38 };
 }
 function getEventPoolOrchardWoods(d: DifficultyOrchardWoods) {
   if (d === 'easy') return EASY_EVENTS as any;
@@ -165,6 +198,44 @@ export default function GameScreen() {
     'bad' | 'neutral' | 'good' | null
   >(null);
 
+  type GamePhaseOrchardWoods =
+    | 'intro'
+    | 'dice_rolling'
+    | 'dice_shown'
+    | 'mode_select'
+    | 'runner'
+    | 'result';
+  const [gamePhaseOrchardWoods, setGamePhaseOrchardWoods] =
+    useState<GamePhaseOrchardWoods>('intro');
+
+  const [showHowRoundWorksOrchardWoods, setShowHowRoundWorksOrchardWoods] =
+    useState(true);
+
+  const [scaleModeOrchardWoods, setScaleModeOrchardWoods] = useState<
+    'safe' | 'risk' | null
+  >(null);
+
+  const diceAnimOrchardWoods = useRef(new RNAnimated.Value(0)).current;
+  const diceAnimLoopRefOrchardWoods =
+    useRef<RNAnimated.CompositeAnimation | null>(null);
+  const diceRevealTimerRefOrchardWoods = useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null);
+  const diceToModeTimerRefOrchardWoods = useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null);
+
+  const runnerAnimOrchardWoods = useRef(new RNAnimated.Value(0)).current;
+  const runnerPositionRefOrchardWoods = useRef(0);
+  const runnerDirectionRefOrchardWoods = useRef<1 | -1>(1);
+  const runnerStoppedAtOrchardWoods = useRef<number | null>(null);
+  const runnerIntervalOrchardWoods = useRef<ReturnType<
+    typeof setInterval
+  > | null>(null);
+  const RUNNER_TICK_MS = 40;
+  const RUNNER_SAFE_STEP_ORCHARD_WOODS = 6.2;
+  const RUNNER_RISK_STEP_ORCHARD_WOODS = 13.9;
+
   const [leaveVisibleOrchardWoods, setLeaveVisibleOrchardWoods] =
     useState(false);
 
@@ -223,18 +294,18 @@ export default function GameScreen() {
     }, []),
   );
 
-  const canRollOrchardWoods =
-    rolledOrchardWoods === null &&
+  const canPressStartOrchardWoods =
+    gamePhaseOrchardWoods === 'intro' &&
     livesOrchardWoods > 0 &&
     stepOrchardWoods <= 10;
 
   const canNextOrchardWoods =
-    rolledOrchardWoods !== null &&
+    gamePhaseOrchardWoods === 'result' &&
     livesOrchardWoods > 0 &&
-    stepOrchardWoods < 10;
+    stepOrchardWoods <= 10;
 
   const isLastStepDoneOrchardWoods =
-    rolledOrchardWoods !== null && stepOrchardWoods === 10;
+    gamePhaseOrchardWoods === 'result' && stepOrchardWoods === 10;
 
   const computeHardGoodRewardTextOrchardWoods = (
     currentLivesOrchardWoods: number,
@@ -252,16 +323,60 @@ export default function GameScreen() {
     setRunCoinsOrchardWoods(0);
     setRolledOrchardWoods(null);
     setOutcomeOrchardWoods(null);
+    setGamePhaseOrchardWoods('intro');
+    setShowHowRoundWorksOrchardWoods(true);
+    setScaleModeOrchardWoods(null);
+    runnerAnimOrchardWoods.setValue(0);
+    runnerStoppedAtOrchardWoods.current = null;
+    if (runnerIntervalOrchardWoods.current) {
+      clearInterval(runnerIntervalOrchardWoods.current);
+      runnerIntervalOrchardWoods.current = null;
+    }
+    if (diceRevealTimerRefOrchardWoods.current) {
+      clearTimeout(diceRevealTimerRefOrchardWoods.current);
+      diceRevealTimerRefOrchardWoods.current = null;
+    }
+    if (diceToModeTimerRefOrchardWoods.current) {
+      clearTimeout(diceToModeTimerRefOrchardWoods.current);
+      diceToModeTimerRefOrchardWoods.current = null;
+    }
+    if (diceAnimLoopRefOrchardWoods.current) {
+      diceAnimLoopRefOrchardWoods.current.stop();
+      diceAnimLoopRefOrchardWoods.current = null;
+    }
+    diceAnimOrchardWoods.setValue(0);
 
     setCardOrchardWoods(
       pickRandomOrchardWoods(getEventPoolOrchardWoods(dOrchardWoods)),
     );
-  }, [heroOrchardWoods.lives]);
+  }, [heroOrchardWoods.lives, runnerAnimOrchardWoods, diceAnimOrchardWoods]);
 
   useEffect(() => {
     startNewRunOrchardWoods();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (runnerIntervalOrchardWoods.current) {
+        clearInterval(runnerIntervalOrchardWoods.current);
+        runnerIntervalOrchardWoods.current = null;
+      }
+      if (diceRevealTimerRefOrchardWoods.current) {
+        clearTimeout(diceRevealTimerRefOrchardWoods.current);
+        diceRevealTimerRefOrchardWoods.current = null;
+      }
+      if (diceToModeTimerRefOrchardWoods.current) {
+        clearTimeout(diceToModeTimerRefOrchardWoods.current);
+        diceToModeTimerRefOrchardWoods.current = null;
+      }
+      if (diceAnimLoopRefOrchardWoods.current) {
+        diceAnimLoopRefOrchardWoods.current.stop();
+        diceAnimLoopRefOrchardWoods.current = null;
+      }
+      diceAnimOrchardWoods.setValue(0);
+    };
+  }, [diceAnimOrchardWoods]);
 
   const resetRunOrchardWoods = useCallback(() => {
     setRoundEndVisibleOrchardWoods(false);
@@ -276,6 +391,7 @@ export default function GameScreen() {
       dOrchardWoods: DifficultyOrchardWoods,
       rollOrchardWoods: number,
       oOrchardWoods: 'bad' | 'neutral' | 'good',
+      riskModeMultiplierOrchardWoods?: number,
     ) => {
       let nextLivesOrchardWoods = livesOrchardWoods;
       let coinsDeltaOrchardWoods = 0;
@@ -283,13 +399,18 @@ export default function GameScreen() {
       if (oOrchardWoods === 'bad') {
         nextLivesOrchardWoods = Math.max(0, livesOrchardWoods - 1);
         coinsDeltaOrchardWoods = 0;
+      } else if (oOrchardWoods === 'neutral') {
+        coinsDeltaOrchardWoods = 0;
       } else {
-        coinsDeltaOrchardWoods = 1;
+        // good: scale reward — Safe = 1, Risk = 2
+        coinsDeltaOrchardWoods = riskModeMultiplierOrchardWoods === 2 ? 2 : 1;
       }
 
-      if (oOrchardWoods === 'good') {
+      if (
+        oOrchardWoods === 'good' &&
+        riskModeMultiplierOrchardWoods === undefined
+      ) {
         if (dOrchardWoods === 'medium') coinsDeltaOrchardWoods += 3;
-
         if (dOrchardWoods === 'hard') {
           if (livesOrchardWoods >= heroOrchardWoods.lives) {
             coinsDeltaOrchardWoods += 5;
@@ -336,7 +457,7 @@ export default function GameScreen() {
 
               await AsyncStorage.setItem(
                 STORAGE_TOTAL_COINS_ORCHARD_WOODS,
-                JSON.stringify(safeCoins + rankedUpBonusCoinsOrchARD_WOODS),
+                JSON.stringify(safeCoins + rankedUpBonusCoinsOrchardWoods),
               );
 
               setRankUpVisibleOrchardWoods(true);
@@ -400,28 +521,151 @@ export default function GameScreen() {
     ],
   );
 
-  const onPressRollOrchardWoods = useCallback(() => {
-    if (!canRollOrchardWoods) return;
-    isEnabledVibrationOrchardWoods && Vibration.vibrate(100);
+  const stopDiceAnimationOrchardWoods = useCallback(() => {
+    if (diceAnimLoopRefOrchardWoods.current) {
+      diceAnimLoopRefOrchardWoods.current.stop();
+      diceAnimLoopRefOrchardWoods.current = null;
+    }
+    diceAnimOrchardWoods.setValue(0);
+  }, [diceAnimOrchardWoods]);
 
-    const rOrchardWoods = rollD10OrchardWoods();
-    const oOrchardWoods = calcOutcomeOrchardWoods(
-      difficultyOrchardWoods,
-      rOrchardWoods,
+  const startDiceAnimationOrchardWoods = useCallback(() => {
+    stopDiceAnimationOrchardWoods();
+    const loop = RNAnimated.loop(
+      RNAnimated.sequence([
+        RNAnimated.timing(diceAnimOrchardWoods, {
+          toValue: 1,
+          duration: 180,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: true,
+        }),
+        RNAnimated.timing(diceAnimOrchardWoods, {
+          toValue: 0,
+          duration: 220,
+          easing: Easing.in(Easing.quad),
+          useNativeDriver: true,
+        }),
+      ]),
     );
+    diceAnimLoopRefOrchardWoods.current = loop;
+    loop.start();
+  }, [diceAnimOrchardWoods, stopDiceAnimationOrchardWoods]);
 
-    setRolledOrchardWoods(rOrchardWoods);
-    setOutcomeOrchardWoods(oOrchardWoods);
+  const onPressStartOrchardWoods = useCallback(() => {
+    if (!canPressStartOrchardWoods) return;
+    isEnabledVibrationOrchardWoods && Vibration.vibrate(100);
+    setGamePhaseOrchardWoods('dice_rolling');
+    setRolledOrchardWoods(null);
+    startDiceAnimationOrchardWoods();
 
+    if (diceRevealTimerRefOrchardWoods.current) {
+      clearTimeout(diceRevealTimerRefOrchardWoods.current);
+      diceRevealTimerRefOrchardWoods.current = null;
+    }
+    if (diceToModeTimerRefOrchardWoods.current) {
+      clearTimeout(diceToModeTimerRefOrchardWoods.current);
+      diceToModeTimerRefOrchardWoods.current = null;
+    }
+
+    const diceOrchardWoods = rollD6OrchardWoods();
+    diceRevealTimerRefOrchardWoods.current = setTimeout(() => {
+      stopDiceAnimationOrchardWoods();
+      setRolledOrchardWoods(diceOrchardWoods);
+      setGamePhaseOrchardWoods('dice_shown');
+      diceToModeTimerRefOrchardWoods.current = setTimeout(() => {
+        runnerPositionRefOrchardWoods.current = 50;
+        runnerDirectionRefOrchardWoods.current = 1;
+        runnerAnimOrchardWoods.setValue(50);
+        setGamePhaseOrchardWoods('mode_select');
+      }, 800);
+    }, 1200);
+  }, [
+    canPressStartOrchardWoods,
+    isEnabledVibrationOrchardWoods,
+    runnerAnimOrchardWoods,
+    startDiceAnimationOrchardWoods,
+    stopDiceAnimationOrchardWoods,
+  ]);
+
+  const startRunnerOrchardWoods = useCallback(
+    (isRiskOrchardWoods: boolean) => {
+      setScaleModeOrchardWoods(isRiskOrchardWoods ? 'risk' : 'safe');
+      setGamePhaseOrchardWoods('runner');
+      runnerDirectionRefOrchardWoods.current = 1;
+      runnerStoppedAtOrchardWoods.current = null;
+      if (runnerIntervalOrchardWoods.current) {
+        clearInterval(runnerIntervalOrchardWoods.current);
+        runnerIntervalOrchardWoods.current = null;
+      }
+
+      const stepSizeOrchardWoods = isRiskOrchardWoods
+        ? RUNNER_RISK_STEP_ORCHARD_WOODS
+        : RUNNER_SAFE_STEP_ORCHARD_WOODS;
+      runnerIntervalOrchardWoods.current = setInterval(() => {
+        if (runnerStoppedAtOrchardWoods.current !== null) return;
+        let nextPosOrchardWoods =
+          runnerPositionRefOrchardWoods.current +
+          stepSizeOrchardWoods * runnerDirectionRefOrchardWoods.current;
+
+        if (nextPosOrchardWoods >= 100) {
+          nextPosOrchardWoods = 100;
+          runnerDirectionRefOrchardWoods.current = -1;
+        } else if (nextPosOrchardWoods <= 0) {
+          nextPosOrchardWoods = 0;
+          runnerDirectionRefOrchardWoods.current = 1;
+        }
+
+        runnerPositionRefOrchardWoods.current = nextPosOrchardWoods;
+        runnerAnimOrchardWoods.setValue(nextPosOrchardWoods);
+      }, RUNNER_TICK_MS);
+    },
+    [runnerAnimOrchardWoods],
+  );
+
+  const onStopRunnerOrchardWoods = useCallback(() => {
+    if (
+      gamePhaseOrchardWoods !== 'runner' ||
+      runnerStoppedAtOrchardWoods.current !== null
+    )
+      return;
+    isEnabledVibrationOrchardWoods && Vibration.vibrate(50);
+
+    const stopAt = Math.min(
+      100,
+      Math.max(0, runnerPositionRefOrchardWoods.current),
+    );
+    runnerStoppedAtOrchardWoods.current = stopAt;
+
+    if (runnerIntervalOrchardWoods.current) {
+      clearInterval(runnerIntervalOrchardWoods.current);
+      runnerIntervalOrchardWoods.current = null;
+    }
+    runnerAnimOrchardWoods.setValue(stopAt);
+
+    const diceOrchardWoods = rolledOrchardWoods ?? 1;
+    const layoutOrchardWoods = getScaleLayoutOrchardWoods(diceOrchardWoods);
+    const g = layoutOrchardWoods.green;
+    const y = layoutOrchardWoods.yellow;
+    const zoneOrchardWoods: 'good' | 'neutral' | 'bad' =
+      stopAt <= g ? 'good' : stopAt <= g + y ? 'neutral' : 'bad';
+    setOutcomeOrchardWoods(zoneOrchardWoods);
+
+    const isRiskOrchardWoods = scaleModeOrchardWoods === 'risk';
+    const multOrchardWoods = isRiskOrchardWoods ? 2 : 1;
     void applyEconomyAndResultOrchardWoods(
       difficultyOrchardWoods,
-      rOrchardWoods,
-      oOrchardWoods,
+      diceOrchardWoods,
+      zoneOrchardWoods,
+      multOrchardWoods,
     );
+    setGamePhaseOrchardWoods('result');
   }, [
-    applyEconomyAndResultOrchardWoods,
-    canRollOrchardWoods,
+    gamePhaseOrchardWoods,
+    rolledOrchardWoods,
+    scaleModeOrchardWoods,
     difficultyOrchardWoods,
+    runnerAnimOrchardWoods,
+    applyEconomyAndResultOrchardWoods,
     isEnabledVibrationOrchardWoods,
   ]);
 
@@ -431,10 +675,29 @@ export default function GameScreen() {
     setStepOrchardWoods(prev => prev + 1);
     setRolledOrchardWoods(null);
     setOutcomeOrchardWoods(null);
+    setGamePhaseOrchardWoods('intro');
+    setScaleModeOrchardWoods(null);
+    setShowHowRoundWorksOrchardWoods(false);
+    runnerAnimOrchardWoods.setValue(0);
+    runnerStoppedAtOrchardWoods.current = null;
+    stopDiceAnimationOrchardWoods();
+    if (diceRevealTimerRefOrchardWoods.current) {
+      clearTimeout(diceRevealTimerRefOrchardWoods.current);
+      diceRevealTimerRefOrchardWoods.current = null;
+    }
+    if (diceToModeTimerRefOrchardWoods.current) {
+      clearTimeout(diceToModeTimerRefOrchardWoods.current);
+      diceToModeTimerRefOrchardWoods.current = null;
+    }
     setCardOrchardWoods(
       pickRandomOrchardWoods(getEventPoolOrchardWoods(difficultyOrchardWoods)),
     );
-  }, [canNextOrchardWoods, difficultyOrchardWoods]);
+  }, [
+    canNextOrchardWoods,
+    difficultyOrchardWoods,
+    runnerAnimOrchardWoods,
+    stopDiceAnimationOrchardWoods,
+  ]);
 
   const confirmLeaveOrchardWoods = useCallback(() => {
     setLeaveVisibleOrchardWoods(false);
@@ -462,7 +725,12 @@ export default function GameScreen() {
   );
 
   const resultLineOrchardWoods = useMemo(() => {
-    if (rolledOrchardWoods === null || !outcomeOrchardWoods) return null;
+    if (
+      gamePhaseOrchardWoods !== 'result' ||
+      rolledOrchardWoods === null ||
+      !outcomeOrchardWoods
+    )
+      return null;
 
     if (difficultyOrchardWoods === 'hard' && outcomeOrchardWoods === 'good') {
       return `Rare reward: ${computeHardGoodRewardTextOrchardWoods(
@@ -473,10 +741,53 @@ export default function GameScreen() {
   }, [
     cardOrchardWoods,
     difficultyOrchardWoods,
+    gamePhaseOrchardWoods,
     livesOrchardWoods,
     outcomeOrchardWoods,
     rolledOrchardWoods,
   ]);
+
+  const scaleLayoutOrchardWoods = useMemo(() => {
+    const d = rolledOrchardWoods ?? 1;
+    return getScaleLayoutOrchardWoods(d);
+  }, [rolledOrchardWoods]);
+
+  const scaleFrameSourceOrchardWoods = useMemo(() => {
+    const d = rolledOrchardWoods ?? 1;
+    if (d <= 2) return SCALE_BAR_EASY_ORCHARD_WOODS;
+    if (d <= 4) return SCALE_BAR_MEDIUM_ORCHARD_WOODS;
+    return SCALE_BAR_HARD_ORCHARD_WOODS;
+  }, [rolledOrchardWoods]);
+
+  const showScaleOrchardWoods =
+    gamePhaseOrchardWoods === 'mode_select' ||
+    gamePhaseOrchardWoods === 'runner' ||
+    gamePhaseOrchardWoods === 'result';
+
+  const isIntroScreenOrchardWoods =
+    showHowRoundWorksOrchardWoods &&
+    gamePhaseOrchardWoods === 'intro' &&
+    stepOrchardWoods === 1;
+
+  const diceFaceSourceOrchardWoods =
+    rolledOrchardWoods && rolledOrchardWoods >= 1 && rolledOrchardWoods <= 6
+      ? DICE_FACE_ASSETS_ORCHARD_WOODS[
+          rolledOrchardWoods as 1 | 2 | 3 | 4 | 5 | 6
+        ]
+      : DICE_UNKNOWN_ORCHARD_WOODS;
+
+  const diceJumpYOrchardWoods = diceAnimOrchardWoods.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -14],
+  });
+  const diceStretchXOrchardWoods = diceAnimOrchardWoods.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.06],
+  });
+  const diceStretchYOrchardWoods = diceAnimOrchardWoods.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0.94],
+  });
 
   return (
     <ImageBackground
@@ -488,134 +799,339 @@ export default function GameScreen() {
         contentContainerStyle={{ flexGrow: 1, height: 800 }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={orchardWoodsTopCardWrap}>
-          <ImageBackground
-            source={diffUIOrchardWoods.frame}
-            style={orchardWoodsTopCard}
-            resizeMode="stretch"
-          >
-            <Text style={orchardWoodsCardTitle}>{cardOrchardWoods.title}</Text>
-
-            <Text style={orchardWoodsCardEventText}>
-              {cardOrchardWoods.event}
-            </Text>
-
-            {!!resultLineOrchardWoods && (
-              <Text style={orchardWoodsCardResultText}>
-                {resultLineOrchardWoods}
-              </Text>
-            )}
-
-            <View style={orchardWoodsDotsRow}>
-              {dotsOrchardWoods.map(nOrchardWoods => {
-                const activeOrchardWoods = nOrchardWoods <= stepOrchardWoods;
-                return (
-                  <View
-                    key={nOrchardWoods}
-                    style={[
-                      orchardWoodsDot,
-                      activeOrchardWoods && orchardWoodsDotActive,
-                    ]}
-                  />
-                );
-              })}
-            </View>
-          </ImageBackground>
-        </View>
-
-        <View style={orchardWoodsCenterWrap}>
-          <ImageBackground
-            source={require('../../assets/images/purpleBadge.png')}
-            style={orchardWoodsBadge}
-            resizeMode="contain"
-          >
-            <Text style={orchardWoodsBadgeText}>
-              {rolledOrchardWoods ?? '?'}
-            </Text>
-          </ImageBackground>
-
-          <View style={orchardWoodsHeroWrap}>
+        {isIntroScreenOrchardWoods ? (
+          <View style={orchardWoodsIntroOverlay}>
             <Image
-              source={heroOrchardWoods.image}
-              style={orchardWoodsHeroImg}
+              source={require('../../assets/images/introimg1.png')}
+              style={orchardWoodsIntroLogo}
               resizeMode="contain"
             />
-
             <ImageBackground
-              source={require('../../assets/images/heart.png')}
-              style={orchardWoodsLivesBubble}
+              source={require('../../assets/images/largeBoard.png')}
+              style={[orchardWoodsHowRoundModal, { marginBottom: 30 }]}
+              resizeMode="stretch"
             >
-              <Text style={orchardWoodsLivesText}>{livesOrchardWoods}</Text>
+              <Text
+                style={[
+                  orchardWoodsHowRoundTitle,
+                  { marginTop: 10, marginBottom: 40 },
+                ]}
+              >
+                How the Round Works
+              </Text>
+              <Text style={orchardWoodsHowRoundText}>
+                Roll the dice and watch the bar.
+              </Text>
+              <Text style={orchardWoodsHowRoundText}>
+                Green is a good outcome, yellow is safe, red is danger.
+              </Text>
+              <Text style={orchardWoodsHowRoundText}>Choose your mode:</Text>
+              <Text style={orchardWoodsHowRoundText}>
+                Safe — slower, safer.
+              </Text>
+              <Text style={orchardWoodsHowRoundText}>
+                Risk — faster, double reward.
+              </Text>
+              <Text style={orchardWoodsHowRoundText}>
+                Stop the marker at the right moment.
+              </Text>
             </ImageBackground>
+
+            <TouchableOpacity
+              activeOpacity={0.9}
+              onPress={() => setShowHowRoundWorksOrchardWoods(false)}
+            >
+              <ImageBackground
+                source={require('../../assets/images/introBtn.png')}
+                style={orchardWoodsMainBtn}
+                resizeMode="stretch"
+              >
+                <Text style={orchardWoodsMainBtnText}>Begin</Text>
+              </ImageBackground>
+            </TouchableOpacity>
+            <View style={{ height: 12 }} />
+            <TouchableOpacity
+              activeOpacity={0.9}
+              onPress={askLeaveOrchardWoods}
+            >
+              <ImageBackground
+                source={require('../../assets/images/homebtn.png')}
+                style={orchardWoodsHomeBtn}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
           </View>
-        </View>
+        ) : (
+          <>
+            <View style={orchardWoodsTopCardWrap}>
+              <ImageBackground
+                source={diffUIOrchardWoods.frame}
+                style={orchardWoodsTopCard}
+                resizeMode="stretch"
+              >
+                <Text style={orchardWoodsCardTitle}>
+                  {cardOrchardWoods.title}
+                </Text>
 
-        <View style={orchardWoodsBottomButtonsArea}>
-          {canRollOrchardWoods ? (
-            <View>
-              <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={onPressRollOrchardWoods}
-              >
-                <ImageBackground
-                  source={require('../../assets/images/introBtn.png')}
-                  style={orchardWoodsMainBtn}
-                  resizeMode="stretch"
-                >
-                  <Text style={orchardWoodsMainBtnText}>Start</Text>
-                </ImageBackground>
-              </TouchableOpacity>
+                <Text style={orchardWoodsCardEventText}>
+                  {cardOrchardWoods.event}
+                </Text>
 
-              <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={askLeaveOrchardWoods}
-              >
-                <ImageBackground
-                  source={require('../../assets/images/homebtn.png')}
-                  style={[
-                    orchardWoodsHomeBtn,
-                    { marginTop: 12, alignSelf: 'center' },
-                  ]}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={orchardWoodsAfterRollRow}>
-              <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={onNextStepOrchardWoods}
-                disabled={!canNextOrchardWoods}
-              >
-                <ImageBackground
-                  source={require('../../assets/images/introBtn.png')}
-                  style={[
-                    orchardWoodsMainBtn,
-                    !canNextOrchardWoods && { opacity: 0.55 },
-                  ]}
-                  resizeMode="stretch"
-                >
-                  <Text style={orchardWoodsMainBtnText}>
-                    {isLastStepDoneOrchardWoods ? 'Finish' : 'Next'}
+                {!!resultLineOrchardWoods && (
+                  <Text style={orchardWoodsCardResultText}>
+                    {resultLineOrchardWoods}
                   </Text>
-                </ImageBackground>
-              </TouchableOpacity>
+                )}
 
-              <View style={{ height: 12 }} />
+                <View style={orchardWoodsDotsRow}>
+                  {dotsOrchardWoods.map(nOrchardWoods => {
+                    const activeOrchardWoods =
+                      nOrchardWoods <= stepOrchardWoods;
+                    return (
+                      <View
+                        key={nOrchardWoods}
+                        style={[
+                          orchardWoodsDot,
+                          activeOrchardWoods && orchardWoodsDotActive,
+                        ]}
+                      />
+                    );
+                  })}
+                </View>
+              </ImageBackground>
+            </View>
 
-              <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={askLeaveOrchardWoods}
+            <View style={orchardWoodsCenterWrap}>
+              <RNAnimated.View
+                style={{
+                  transform: [
+                    { translateY: diceJumpYOrchardWoods },
+                    { scaleX: diceStretchXOrchardWoods },
+                    { scaleY: diceStretchYOrchardWoods },
+                  ],
+                }}
               >
                 <ImageBackground
-                  source={require('../../assets/images/homebtn.png')}
-                  style={orchardWoodsHomeBtn}
+                  source={diceFaceSourceOrchardWoods}
+                  style={orchardWoodsBadge}
+                  resizeMode="contain"
+                >
+                  {(gamePhaseOrchardWoods === 'dice_rolling' ||
+                    rolledOrchardWoods === null) && (
+                    <Text style={orchardWoodsBadgeText}>?</Text>
+                  )}
+                </ImageBackground>
+              </RNAnimated.View>
+
+              {showScaleOrchardWoods && (
+                <View style={orchardWoodsScaleWrap}>
+                  <ImageBackground
+                    source={scaleFrameSourceOrchardWoods}
+                    style={orchardWoodsScaleFrame}
+                    resizeMode="stretch"
+                  >
+                    <RNAnimated.View
+                      style={[
+                        orchardWoodsScaleRunner,
+                        {
+                          transform: [
+                            {
+                              translateX: runnerAnimOrchardWoods.interpolate({
+                                inputRange: [0, 100],
+                                outputRange: [
+                                  0,
+                                  ORCHARD_WOODS_SCALE_BAR_WIDTH - 34,
+                                ],
+                              }),
+                            },
+                          ],
+                        },
+                      ]}
+                    >
+                      <Image
+                        source={SCALE_RUNNER_MARKER_ORCHARD_WOODS}
+                        style={orchardWoodsScaleRunnerImg}
+                        resizeMode="contain"
+                      />
+                    </RNAnimated.View>
+                  </ImageBackground>
+                </View>
+              )}
+
+              <View style={orchardWoodsHeroWrap}>
+                <Image
+                  source={heroOrchardWoods.image}
+                  style={orchardWoodsHeroImg}
                   resizeMode="contain"
                 />
-              </TouchableOpacity>
+
+                <ImageBackground
+                  source={require('../../assets/images/heart.png')}
+                  style={orchardWoodsLivesBubble}
+                >
+                  <Text style={orchardWoodsLivesText}>{livesOrchardWoods}</Text>
+                </ImageBackground>
+              </View>
             </View>
-          )}
-        </View>
+
+            <View style={[orchardWoodsBottomButtonsArea]}>
+              {gamePhaseOrchardWoods === 'intro' &&
+                canPressStartOrchardWoods && (
+                  <View>
+                    <TouchableOpacity
+                      activeOpacity={0.9}
+                      onPress={onPressStartOrchardWoods}
+                    >
+                      <ImageBackground
+                        source={require('../../assets/images/introBtn.png')}
+                        style={[orchardWoodsMainBtn]}
+                        resizeMode="stretch"
+                      >
+                        <Text style={orchardWoodsMainBtnText}>Start</Text>
+                      </ImageBackground>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      activeOpacity={0.9}
+                      onPress={askLeaveOrchardWoods}
+                    >
+                      <ImageBackground
+                        source={require('../../assets/images/homebtn.png')}
+                        style={[
+                          orchardWoodsHomeBtn,
+                          { marginTop: 12, alignSelf: 'center' },
+                        ]}
+                        resizeMode="contain"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+              {gamePhaseOrchardWoods === 'mode_select' && (
+                <>
+                  <View style={orchardWoodsModeSelectRow}>
+                    <TouchableOpacity
+                      activeOpacity={0.9}
+                      onPress={() => startRunnerOrchardWoods(false)}
+                    >
+                      <ImageBackground
+                        source={MODE_SAFE_BUTTON_ORCHARD_WOODS}
+                        style={[orchardWoodsModeBtn]}
+                        resizeMode="stretch"
+                      >
+                        <Text style={orchardWoodsMainBtnText}>Safe Mode</Text>
+                      </ImageBackground>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      activeOpacity={0.9}
+                      onPress={() => startRunnerOrchardWoods(true)}
+                    >
+                      <ImageBackground
+                        source={MODE_RISK_BUTTON_ORCHARD_WOODS}
+                        style={[orchardWoodsModeBtn]}
+                        resizeMode="stretch"
+                      >
+                        <Text
+                          style={[orchardWoodsMainBtnText, { fontSize: 14 }]}
+                        >
+                          Risk Mode{'\n'}Reward X2
+                        </Text>
+                      </ImageBackground>
+                    </TouchableOpacity>
+                  </View>
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={askLeaveOrchardWoods}
+                    style={{ marginTop: 12 }}
+                  >
+                    <ImageBackground
+                      source={require('../../assets/images/homebtn.png')}
+                      style={orchardWoodsHomeBtn}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                </>
+              )}
+
+              {(gamePhaseOrchardWoods === 'dice_rolling' ||
+                gamePhaseOrchardWoods === 'dice_shown') && (
+                <TouchableOpacity
+                  activeOpacity={0.9}
+                  onPress={askLeaveOrchardWoods}
+                >
+                  <ImageBackground
+                    source={require('../../assets/images/homebtn.png')}
+                    style={orchardWoodsHomeBtn}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+              )}
+
+              {gamePhaseOrchardWoods === 'runner' && (
+                <View style={orchardWoodsAfterRollRow}>
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={onStopRunnerOrchardWoods}
+                  >
+                    <ImageBackground
+                      source={require('../../assets/images/safe.png')}
+                      style={orchardWoodsMainBtn}
+                      resizeMode="stretch"
+                    >
+                      <Text style={orchardWoodsMainBtnText}>LOCK</Text>
+                    </ImageBackground>
+                  </TouchableOpacity>
+
+                  <View style={{ height: 12 }} />
+
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={askLeaveOrchardWoods}
+                  >
+                    <ImageBackground
+                      source={require('../../assets/images/homebtn.png')}
+                      style={orchardWoodsHomeBtn}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {gamePhaseOrchardWoods === 'result' && (
+                <View style={orchardWoodsAfterRollRow}>
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={onNextStepOrchardWoods}
+                    disabled={!canNextOrchardWoods}
+                  >
+                    <ImageBackground
+                      source={require('../../assets/images/introBtn.png')}
+                      style={[
+                        orchardWoodsMainBtn,
+                        !canNextOrchardWoods && { opacity: 0.55 },
+                      ]}
+                      resizeMode="stretch"
+                    >
+                      <Text style={orchardWoodsMainBtnText}>
+                        {isLastStepDoneOrchardWoods ? 'Finish' : 'Next'}
+                      </Text>
+                    </ImageBackground>
+                  </TouchableOpacity>
+                  <View style={{ height: 12 }} />
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={askLeaveOrchardWoods}
+                  >
+                    <ImageBackground
+                      source={require('../../assets/images/homebtn.png')}
+                      style={orchardWoodsHomeBtn}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          </>
+        )}
 
         {/* Leave modal */}
         <Modal
@@ -782,7 +1298,7 @@ const orchardWoodsBg = { flex: 1 };
 
 const orchardWoodsTopCardWrap = {
   position: 'absolute' as const,
-  top: 54,
+  top: 34,
   alignSelf: 'center' as const,
   zIndex: 10,
 };
@@ -820,7 +1336,7 @@ const orchardWoodsCardResultText = {
 
 const orchardWoodsDotsRow = {
   position: 'absolute' as const,
-  bottom: 23,
+  bottom: 33,
   flexDirection: 'row' as const,
   gap: 6,
 };
@@ -840,12 +1356,12 @@ const orchardWoodsCenterWrap = {
   flex: 1,
   alignItems: 'center' as const,
   justifyContent: 'center' as const,
-  paddingTop: 140,
+  paddingTop: 150,
 };
 
 const orchardWoodsBadge = {
-  width: 105,
-  height: 76,
+  width: 60,
+  height: 58,
   alignItems: 'center' as const,
   justifyContent: 'center' as const,
   marginBottom: 15,
@@ -863,13 +1379,13 @@ const orchardWoodsHeroWrap = {
 };
 
 const orchardWoodsHeroImg = {
-  width: 220,
-  height: 260,
+  width: 133,
+  height: 240,
 };
 
 const orchardWoodsLivesBubble = {
   position: 'absolute' as const,
-  right: 40,
+  right: 10,
   top: 0,
   width: 28,
   height: 24,
@@ -990,4 +1506,101 @@ const orchardWoodsResultCoinsText = {
   color: '#FFFFFF',
   fontFamily: 'Sansation-Bold',
   fontSize: 20,
+};
+
+const orchardWoodsHowRoundModal = {
+  width: 320,
+  paddingHorizontal: 24,
+  paddingTop: 28,
+  paddingBottom: 20,
+  alignItems: 'center' as const,
+  marginBottom: 16,
+  height: 320,
+};
+
+const orchardWoodsIntroOverlay = {
+  flex: 1,
+  width: '100%' as const,
+  alignItems: 'center' as const,
+  justifyContent: 'flex-start' as const,
+  paddingTop: 70,
+};
+
+const orchardWoodsIntroLogo = {
+  width: 226,
+  height: 230,
+  marginBottom: 22,
+};
+
+const orchardWoodsHowRoundTitle = {
+  color: '#FFFFFF',
+  fontFamily: 'Sansation-Bold',
+  fontSize: 20,
+  marginBottom: 14,
+  textAlign: 'center' as const,
+};
+
+const orchardWoodsHowRoundText = {
+  color: '#FFFFFF',
+  fontSize: 14,
+  textAlign: 'center' as const,
+  marginBottom: 6,
+};
+
+const orchardWoodsScaleWrap = {
+  width: ORCHARD_WOODS_SCALE_BAR_WIDTH,
+  marginBottom: 15,
+  alignItems: 'center' as const,
+};
+
+const orchardWoodsScaleFrame = {
+  width: ORCHARD_WOODS_SCALE_BAR_WIDTH,
+  height: 36,
+  justifyContent: 'center' as const,
+};
+
+const orchardWoodsScaleTrack = {
+  height: 16,
+  marginHorizontal: 12,
+  borderRadius: 10,
+  overflow: 'hidden' as const,
+  flexDirection: 'row' as const,
+};
+
+const orchardWoodsScaleSegment = {
+  height: '100%' as const,
+};
+
+const orchardWoodsScaleRunner = {
+  position: 'absolute' as const,
+  left: 7,
+  top: 6,
+  width: 20,
+  height: 20,
+  alignItems: 'center' as const,
+  justifyContent: 'center' as const,
+};
+
+const orchardWoodsScaleRunnerImg = {
+  width: 20,
+  height: 20,
+};
+
+const orchardWoodsTapHint = {
+  color: '#FED546',
+  fontSize: 14,
+  marginTop: 6,
+};
+
+const orchardWoodsModeSelectRow = {
+  flexDirection: 'row' as const,
+  gap: 14,
+  alignItems: 'center' as const,
+};
+
+const orchardWoodsModeBtn = {
+  width: 140,
+  height: 56,
+  alignItems: 'center' as const,
+  justifyContent: 'center' as const,
 };
