@@ -1,5 +1,12 @@
 import React from 'react';
-import { Image, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  Modal,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { NeonModalSquare } from '../screens/HomeScreen';
 
@@ -34,23 +41,18 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   resetProgress,
 }) => {
   return (
-    <Modal visible={setupVisible} transparent animationType="fade">
+    <Modal
+      visible={setupVisible}
+      transparent
+      animationType="fade"
+      statusBarTranslucent={Platform.OS === 'android'}
+    >
       <View style={styles.modalBackdrop}>
         <NeonModalSquare
           title="Settings"
           onClose={() => setSetupVisible(false)}
         >
           <View style={styles.setupRow}>
-            <TouchableOpacity onPress={() => toggleMusic(!isEnabledSound)}>
-              <Image
-                source={
-                  isEnabledSound
-                    ? require('../../assets/images/musiconicon.png')
-                    : require('../../assets/images/musicofficon.png')
-                }
-              />
-            </TouchableOpacity>
-
             <TouchableOpacity
               onPress={() => toggleVibration(!isEnabledVibration)}
             >

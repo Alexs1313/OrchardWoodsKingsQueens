@@ -17,6 +17,7 @@ import {
   TouchableOpacity,
   Vibration,
   View,
+  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -29,6 +30,7 @@ import { useStore } from '../store/context';
 import { EASY_EVENTS, HARD_EVENTS, MEDIUM_EVENTS } from '../data/levels';
 
 import { HEROES, type HeroId, type Hero } from '../data/heroes';
+import Orientation from 'react-native-orientation-locker';
 
 type RootStackParamListOrchardWoods = {
   Home: undefined;
@@ -258,6 +260,19 @@ export default function GameScreen() {
   const dotsOrchardWoods = useMemo(
     () => Array.from({ length: 10 }).map((_, i) => i + 1),
     [],
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (
+        Platform.OS === 'android' &&
+        (roundEndVisibleOrchardWoods || leaveVisibleOrchardWoods)
+      ) {
+        Orientation.lockToPortrait();
+      }
+
+      return () => Orientation.unlockAllOrientations();
+    }, [roundEndVisibleOrchardWoods, leaveVisibleOrchardWoods]),
   );
 
   useFocusEffect(
@@ -1138,6 +1153,7 @@ export default function GameScreen() {
           visible={leaveVisibleOrchardWoods}
           transparent
           animationType="fade"
+          statusBarTranslucent={Platform.OS === 'android'}
           onRequestClose={() => setLeaveVisibleOrchardWoods(false)}
         >
           <View style={orchardWoodsModalBackdrop}>
@@ -1222,6 +1238,7 @@ export default function GameScreen() {
           visible={roundEndVisibleOrchardWoods}
           transparent
           animationType="fade"
+          statusBarTranslucent={Platform.OS === 'android'}
           onRequestClose={() => setRoundEndVisibleOrchardWoods(false)}
         >
           <View style={orchardWoodsModalBackdrop}>

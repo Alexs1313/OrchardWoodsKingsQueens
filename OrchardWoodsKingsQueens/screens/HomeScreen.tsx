@@ -10,6 +10,7 @@ import {
   View,
   Modal,
   Linking,
+  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -24,6 +25,7 @@ import AboutModal from '../components/AboutModal';
 import SettingsModal from '../components/SettingsModal';
 import { useStore } from '../store/context';
 import { unlockRandomPiece } from '../utils/collectionStorage';
+import Orientation from 'react-native-orientation-locker';
 
 type RootStackParamListOrchardWoods = {
   HomeScreen: undefined;
@@ -221,6 +223,19 @@ const HomeScreen: React.FC = () => {
   const [chestRewardOrchardWoods, setChestRewardOrchardWoods] =
     useState<DailyChestRewardOrchardWoods | null>(null);
 
+  useFocusEffect(
+    useCallback(() => {
+      if (
+        Platform.OS === 'android' &&
+        (rulesVisibleOrchardWoods || setupVisibleOrchardWoods)
+      ) {
+        Orientation.lockToPortrait();
+      }
+
+      return () => Orientation.unlockAllOrientations();
+    }, [rulesVisibleOrchardWoods, setupVisibleOrchardWoods]),
+  );
+
   const rankNameOrchardWoods = useMemo(() => {
     const safeIdx = Math.min(
       displayRankIdxOrchardWoods,
@@ -251,7 +266,6 @@ const HomeScreen: React.FC = () => {
 
   const chestClosedImgOrchardWoods = require('../../assets/images/chest.png');
   const chestOpenImgOrchardWoods = require('../../assets/images/chestOpen.png');
-  const chestOpenGifOrchardWoods = require('../../assets/images/chestopen.gif');
   const paperImgOrchardWoods = require('../../assets/images/paper.png');
   const rankUpGifOrchardWoods = require('../../assets/images/rankup.gif');
 
@@ -658,17 +672,6 @@ const HomeScreen: React.FC = () => {
               </Text>
 
               <View style={{ marginTop: 12, alignItems: 'center' }}>
-                <Image
-                  source={chestOpenGifOrchardWoods}
-                  style={{
-                    width: 240,
-                    height: 240,
-                    position: 'absolute',
-                    top: -80,
-                    zIndex: 1,
-                  }}
-                  resizeMode="contain"
-                />
                 <Image
                   source={chestOpenImgOrchardWoods}
                   style={{ width: 210, height: 130 }}
