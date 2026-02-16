@@ -152,7 +152,7 @@ const orchardWoodsBoardTitle = {
 };
 
 const orchardWoodsBoardText = {
-  fontSize: 20,
+  fontSize: 17,
   color: '#fff',
   textAlign: 'center' as const,
   fontFamily: 'Sansation-Regular',
@@ -167,7 +167,7 @@ const orchardWoodsOrchnextbtn = {
 };
 
 const orchardWoodsNextbtntext = {
-  fontSize: 18,
+  fontSize: 17,
   color: '#fff',
   fontFamily: 'Sansation-Bold',
 };

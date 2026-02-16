@@ -46,12 +46,11 @@ const styles = StyleSheet.create({
   },
   rulesText: {
     color: '#FFFFFF',
-    fontSize: 18,
-    lineHeight: 24,
+    fontSize: 16,
     textAlign: 'center',
-    marginTop: 25,
+    marginTop: 14,
     fontFamily: 'Sansation-Regular',
-    paddingHorizontal: 10,
+    paddingHorizontal: 1,
   },
 });
 

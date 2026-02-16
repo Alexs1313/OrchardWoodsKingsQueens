@@ -399,21 +399,21 @@ const orchardWoodsRow = {
 const orchardWoodsStatLabel = {
   color: '#FFFFFF',
   fontFamily: 'Sansation-Bold',
-  fontSize: 17,
+  fontSize: 16,
   marginRight: 8,
 };
 
 const orchardWoodsStatText = {
   color: '#FFFFFF',
   fontFamily: 'Sansation-Bold',
-  fontSize: 18,
+  fontSize: 17,
   marginLeft: 8,
 };
 
 const orchardWoodsFortune = {
   color: '#FFFFFF',
   fontFamily: 'Sansation-Bold',
-  fontSize: 18,
+  fontSize: 16,
   marginTop: 8,
 };
 
@@ -456,5 +456,5 @@ const orchardWoodsBtnTapFill = {
 const orchardWoodsBottomBtnText = {
   color: '#FFFFFF',
   fontFamily: 'Sansation-Bold',
-  fontSize: 22,
+  fontSize: 20,
 };

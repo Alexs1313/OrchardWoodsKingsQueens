@@ -829,7 +829,7 @@ export default function GameScreen() {
               <Text
                 style={[
                   orchardWoodsHowRoundTitle,
-                  { marginTop: 10, marginBottom: 40 },
+                  { marginTop: 10, marginBottom: 20 },
                 ]}
               >
                 How the Round Works
@@ -1561,7 +1561,7 @@ const orchardWoodsHowRoundText = {
   color: '#FFFFFF',
   fontSize: 14,
   textAlign: 'center' as const,
-  marginBottom: 6,
+  marginBottom: 1,
 };
 
 const orchardWoodsScaleWrap = {

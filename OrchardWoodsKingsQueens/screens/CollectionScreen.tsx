@@ -325,7 +325,7 @@ const orchardWoodsCard = {
 const orchardWoodsTitle = {
   color: '#FFFFFF',
   fontFamily: 'Sansation-Bold',
-  fontSize: 14,
+  fontSize: 12,
   textAlign: 'center' as const,
   marginBottom: 18,
 };

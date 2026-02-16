@@ -547,7 +547,7 @@ const HomeScreen: React.FC = () => {
         <View
           style={[
             orchardWoodsCenter,
-            { paddingTop: heightOrchardWoods * 0.04, height: 800 },
+            { paddingTop: heightOrchardWoods * 0.04 },
           ]}
         >
           {/* Crown + Rank */}
