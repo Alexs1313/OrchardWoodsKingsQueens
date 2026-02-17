@@ -98,6 +98,10 @@ const OnboardScreen: React.FC = () => {
             source={ongoalimagesOrchardWoods[currentIndexOrchardWoods]}
             style={[
               orchardWoodsMainImg,
+              currentIndexOrchardWoods === 0 && {
+                width: 220,
+                height: 220,
+              },
               {
                 marginTop: heightOrchardWoods * 0.1,
                 marginBottom: heightOrchardWoods * 0.12,

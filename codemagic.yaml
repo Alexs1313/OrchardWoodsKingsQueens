@@ -1,19 +1,19 @@
 workflows:
   ios-workflow:
-    name: 'QueensMinn: Kings Woods'
+    name: 'QuееnsMіnn: Кings Wооds'
     max_build_duration: 120
     instance_type: mac_mini_m2
     integrations:
-      app_store_connect: OrchardWoodsKingsQueensAPIKey
+      app_store_connect: OrchardWoodsAPIKey
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.OrchardWoodsKingsQueens
+        bundle_identifier: com.OrchardWoods
       vars:
-        BUNDLE_ID: com.OrchardWoodsKingsQueens
+        BUNDLE_ID: com.OrchardWoods
         XCODE_WORKSPACE: OrchardWoodsKingsQueens.xcworkspace
         XCODE_SCHEME: OrchardWoodsKingsQueens
-        APP_STORE_APPLE_ID: 6759244455
+        APP_STORE_APPLE_ID: 6759286905
     scripts:
       - name: Install npm dependencies
         script: |
@@ -43,4 +43,4 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_app_store: true
-        copyright: 'QueensMinn: Kings Woods 2026'
+        copyright: 'QuееnsMіnn: Кings Wооds 2026'
