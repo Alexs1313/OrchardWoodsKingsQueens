@@ -37,11 +37,32 @@ type DailyChestRewardOrchardWoods =
   | { type: 'coins'; amount: number }
   | { type: 'piece'; amount: number };
 
+type DailyReactionStatsOrchardWoods = {
+  totalStops: number;
+  greenStops: number;
+  redStops: number;
+  currentPerfectStreak: number;
+  bestPerfectStreak: number;
+};
+
+type DailyChallengeStatsOrchardWoods = {
+  reactionSkill: string;
+  perfectStreak: number;
+  successRate: string;
+  redZoneRate: string;
+};
+
 const STORAGE_TOTAL_WINS_ORCHARD_WOODS = 'BK_WINS_V1';
 const STORAGE_TOTAL_COINS_ORCHARD_WOODS = 'BK_COINS_V1';
 
 const STORAGE_DAILY_CHEST_DATE_ORCHARD_WOODS = 'BK_DAILY_CHEST_DATE_V1';
 const STORAGE_DAILY_CHEST_PAYLOAD_ORCHARD_WOODS = 'BK_DAILY_CHEST_PAYLOAD_V1';
+const STORAGE_DAILY_CHALLENGE_MODAL_DATE_ORCHARD_WOODS =
+  'BK_DAILY_CHALLENGE_MODAL_DATE_V1';
+const STORAGE_DAILY_REACTION_STATS_DATE_ORCHARD_WOODS =
+  'BK_DAILY_REACTION_STATS_DATE_V1';
+const STORAGE_DAILY_REACTION_STATS_PAYLOAD_ORCHARD_WOODS =
+  'BK_DAILY_REACTION_STATS_PAYLOAD_V1';
 
 const STORAGE_RANK_SHOWN_ORCHARD_WOODS = 'BK_RANK_SHOWN_V1';
 
@@ -164,6 +185,95 @@ async function openDailyChestOrchardWoods(): Promise<DailyChestRewardOrchardWood
   return reward;
 }
 
+function getDefaultDailyReactionStatsOrchardWoods(): DailyReactionStatsOrchardWoods {
+  return {
+    totalStops: 0,
+    greenStops: 0,
+    redStops: 0,
+    currentPerfectStreak: 0,
+    bestPerfectStreak: 0,
+  };
+}
+
+function percentTextOrchardWoods(part: number, total: number) {
+  if (total <= 0) return '0%';
+  return `${Math.round((part / total) * 100)}%`;
+}
+
+function reactionSkillBySuccessRateOrchardWoods(rate: number) {
+  if (rate >= 75) return 'Legendary';
+  if (rate >= 55) return 'Advanced';
+  if (rate >= 35) return 'Skilled';
+  return 'Novice';
+}
+
+async function getDailyChallengeStatsForTodayOrchardWoods(): Promise<DailyChallengeStatsOrchardWoods> {
+  const fallbackOrchardWoods: DailyChallengeStatsOrchardWoods = {
+    reactionSkill: 'Novice',
+    perfectStreak: 0,
+    successRate: '0%',
+    redZoneRate: '0%',
+  };
+
+  try {
+    const todayOrchardWoods = todayKeyOrchardWoods();
+    const savedDateOrchardWoods = await AsyncStorage.getItem(
+      STORAGE_DAILY_REACTION_STATS_DATE_ORCHARD_WOODS,
+    );
+    if (savedDateOrchardWoods !== JSON.stringify(todayOrchardWoods)) {
+      return fallbackOrchardWoods;
+    }
+
+    const payloadRawOrchardWoods = await AsyncStorage.getItem(
+      STORAGE_DAILY_REACTION_STATS_PAYLOAD_ORCHARD_WOODS,
+    );
+    if (!payloadRawOrchardWoods) {
+      return fallbackOrchardWoods;
+    }
+
+    const parsedOrchardWoods = JSON.parse(
+      payloadRawOrchardWoods,
+    ) as DailyReactionStatsOrchardWoods;
+    if (
+      !parsedOrchardWoods ||
+      typeof parsedOrchardWoods.totalStops !== 'number' ||
+      typeof parsedOrchardWoods.greenStops !== 'number' ||
+      typeof parsedOrchardWoods.redStops !== 'number' ||
+      typeof parsedOrchardWoods.bestPerfectStreak !== 'number'
+    ) {
+      return fallbackOrchardWoods;
+    }
+
+    const safeStatsOrchardWoods = {
+      ...getDefaultDailyReactionStatsOrchardWoods(),
+      ...parsedOrchardWoods,
+    };
+    const successRateValueOrchardWoods =
+      safeStatsOrchardWoods.totalStops > 0
+        ? (safeStatsOrchardWoods.greenStops /
+            safeStatsOrchardWoods.totalStops) *
+          100
+        : 0;
+
+    return {
+      reactionSkill: reactionSkillBySuccessRateOrchardWoods(
+        successRateValueOrchardWoods,
+      ),
+      perfectStreak: safeStatsOrchardWoods.bestPerfectStreak,
+      successRate: percentTextOrchardWoods(
+        safeStatsOrchardWoods.greenStops,
+        safeStatsOrchardWoods.totalStops,
+      ),
+      redZoneRate: percentTextOrchardWoods(
+        safeStatsOrchardWoods.redStops,
+        safeStatsOrchardWoods.totalStops,
+      ),
+    };
+  } catch {
+    return fallbackOrchardWoods;
+  }
+}
+
 const HomeScreen: React.FC = () => {
   const navigationOrchardWoods =
     useNavigation<NavigationProp<RootStackParamListOrchardWoods>>();
@@ -220,6 +330,21 @@ const HomeScreen: React.FC = () => {
 
   const [chestRewardOrchardWoods, setChestRewardOrchardWoods] =
     useState<DailyChestRewardOrchardWoods | null>(null);
+
+  const [
+    dailyChallengeVisibleOrchardWoods,
+    setDailyChallengeVisibleOrchardWoods,
+  ] = useState(false);
+
+  const [dailyChallengeStatsOrchardWoods, setDailyChallengeStatsOrchardWoods] =
+    useState<DailyChallengeStatsOrchardWoods>({
+      reactionSkill: 'Novice',
+      perfectStreak: 0,
+      successRate: '0%',
+      redZoneRate: '0%',
+    });
+
+  const streakDayLabelsOrchardWoods = ['MON', 'TUE', 'WED', 'THU', 'FRI'];
 
   const rankNameOrchardWoods = useMemo(() => {
     const safeIdx = Math.min(
@@ -404,6 +529,25 @@ const HomeScreen: React.FC = () => {
         } else {
           setChestRewardOrchardWoods(null);
           setChestPhaseOrchardWoods('closed');
+        }
+
+        const todayOrchardWoods = todayKeyOrchardWoods();
+        const dailyModalLastDateOrchardWoods = await AsyncStorage.getItem(
+          STORAGE_DAILY_CHALLENGE_MODAL_DATE_ORCHARD_WOODS,
+        );
+
+        const shouldShowDailyChallengeModalOrchardWoods =
+          dailyModalLastDateOrchardWoods !== JSON.stringify(todayOrchardWoods);
+
+        if (shouldShowDailyChallengeModalOrchardWoods) {
+          const dailyChallengeStats =
+            await getDailyChallengeStatsForTodayOrchardWoods();
+          setDailyChallengeStatsOrchardWoods(dailyChallengeStats);
+          setDailyChallengeVisibleOrchardWoods(true);
+          await AsyncStorage.setItem(
+            STORAGE_DAILY_CHALLENGE_MODAL_DATE_ORCHARD_WOODS,
+            JSON.stringify(todayOrchardWoods),
+          );
         }
       };
 
@@ -717,6 +861,115 @@ const HomeScreen: React.FC = () => {
         />
 
         <Modal
+          visible={dailyChallengeVisibleOrchardWoods}
+          transparent
+          animationType="fade"
+        >
+          <View style={orchardWoodsModalBackdrop}>
+            <ImageBackground
+              source={require('../../assets/images/homeModalBoard.png')}
+              style={orchardWoodsDailyChallengeBoard}
+              resizeMode="stretch"
+            >
+              <Text style={orchardWoodsDailyChallengeTitle}>
+                Daily Challenge
+              </Text>
+
+              <View style={orchardWoodsDailyChallengeStreakRow}>
+                {streakDayLabelsOrchardWoods.map((label, idx) => (
+                  <Text
+                    key={label}
+                    style={[
+                      orchardWoodsDailyChallengeStreakDayText,
+                      idx === 0 && orchardWoodsDailyChallengeStreakDayActive,
+                    ]}
+                  >
+                    {label}
+                  </Text>
+                ))}
+              </View>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Text
+                  style={[orchardWoodsDailyChallengeText, { marginTop: 12 }]}
+                >
+                  Reaction Skill:
+                </Text>
+                <Text
+                  style={[orchardWoodsDailyChallengeText, { marginTop: 12 }]}
+                >
+                  {dailyChallengeStatsOrchardWoods.reactionSkill}
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Text style={orchardWoodsDailyChallengeText}>
+                  Perfect Hit Streak:
+                </Text>
+                <Text style={orchardWoodsDailyChallengeText}>
+                  {dailyChallengeStatsOrchardWoods.perfectStreak}
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Text style={orchardWoodsDailyChallengeText}>
+                  Success Rate Green Zone:
+                </Text>
+                <Text style={orchardWoodsDailyChallengeText}>
+                  {dailyChallengeStatsOrchardWoods.successRate}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Text style={orchardWoodsDailyChallengeText}>
+                  Hits in Red Zone:
+                </Text>
+                <Text style={orchardWoodsDailyChallengeText}>
+                  {dailyChallengeStatsOrchardWoods.redZoneRate}
+                </Text>
+              </View>
+            </ImageBackground>
+
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => setDailyChallengeVisibleOrchardWoods(false)}
+              style={{ marginTop: 12 }}
+            >
+              <ImageBackground
+                source={require('../../assets/images/homemainBtn.png')}
+                style={orchardWoodsDailyChallengeBtn}
+                resizeMode="stretch"
+              >
+                <Text style={orchardWoodsDailyChallengeBtnText}>OK</Text>
+              </ImageBackground>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+
+        <Modal
           visible={resetVisibleOrchardWoods}
           transparent
           animationType="fade"
@@ -961,6 +1214,7 @@ const orchardWoodsBottomRow = {
 
 const orchardWoodsModalBackdrop = {
   flex: 1,
+  backgroundColor: 'rgba(0, 36, 114, 0.45)',
   justifyContent: 'center' as const,
   alignItems: 'center' as const,
   paddingHorizontal: 18,
@@ -1014,12 +1268,68 @@ const orchardWoodsModalTitle = {
   fontSize: 22,
   fontFamily: 'Sansation-Bold',
   marginTop: 5,
+  textAlign: 'center' as const,
 };
 
 const orchardWoodsCloseBtn = {
   position: 'absolute' as const,
   right: -25,
   top: -28,
+};
+
+const orchardWoodsDailyChallengeBoard = {
+  width: 334,
+  minHeight: 290,
+  paddingHorizontal: 30,
+  paddingTop: 24,
+  paddingBottom: 18,
+};
+
+const orchardWoodsDailyChallengeTitle = {
+  color: '#FFFFFF',
+  fontSize: 22,
+  fontFamily: 'Sansation-Bold',
+  marginTop: 8,
+  textAlign: 'center' as const,
+};
+
+const orchardWoodsDailyChallengeStreakRow = {
+  marginTop: 46,
+  flexDirection: 'row' as const,
+  justifyContent: 'space-between' as const,
+  width: '100%' as const,
+  paddingHorizontal: 10,
+};
+
+const orchardWoodsDailyChallengeStreakDayText = {
+  color: '#CFC3FF',
+  fontSize: 14,
+  fontFamily: 'Sansation-Bold',
+};
+
+const orchardWoodsDailyChallengeStreakDayActive = {
+  color: 'rgba(0, 148, 22, 1)',
+};
+
+const orchardWoodsDailyChallengeText = {
+  color: '#FFFFFF',
+  fontSize: 16,
+  fontFamily: 'Sansation-Bold',
+  textAlign: 'center' as const,
+  marginTop: 10,
+};
+
+const orchardWoodsDailyChallengeBtn = {
+  width: 192,
+  height: 70,
+  justifyContent: 'center' as const,
+  alignItems: 'center' as const,
+};
+
+const orchardWoodsDailyChallengeBtnText = {
+  color: '#FFFFFF',
+  fontSize: 20,
+  fontFamily: 'Sansation-Bold',
 };
 
 export default HomeScreen;

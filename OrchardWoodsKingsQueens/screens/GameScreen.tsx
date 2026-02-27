@@ -48,6 +48,10 @@ function randomDifficultyOrchardWoods(): DifficultyOrchardWoods {
 
 const STORAGE_TOTAL_COINS_ORCHARD_WOODS = 'BK_COINS_V1';
 const STORAGE_TOTAL_WINS_ORCHARD_WOODS = 'BK_WINS_V1';
+const STORAGE_DAILY_REACTION_STATS_DATE_ORCHARD_WOODS =
+  'BK_DAILY_REACTION_STATS_DATE_V1';
+const STORAGE_DAILY_REACTION_STATS_PAYLOAD_ORCHARD_WOODS =
+  'BK_DAILY_REACTION_STATS_PAYLOAD_V1';
 
 const HERO_STATE_KEY_ORCHARD_WOODS = 'BK_HERO_STATE_V1';
 
@@ -159,6 +163,95 @@ async function addWinOrchardWoods() {
 
 function rankIndexFromWinsOrchardWoods(wins: number) {
   return Math.floor(wins / 5);
+}
+
+type DailyReactionStatsOrchardWoods = {
+  totalStops: number;
+  greenStops: number;
+  redStops: number;
+  currentPerfectStreak: number;
+  bestPerfectStreak: number;
+};
+
+function todayKeyOrchardWoods() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function getDefaultDailyReactionStatsOrchardWoods(): DailyReactionStatsOrchardWoods {
+  return {
+    totalStops: 0,
+    greenStops: 0,
+    redStops: 0,
+    currentPerfectStreak: 0,
+    bestPerfectStreak: 0,
+  };
+}
+
+async function updateDailyReactionStatsOrchardWoods(
+  zoneOrchardWoods: 'good' | 'neutral' | 'bad',
+) {
+  try {
+    const todayOrchardWoods = todayKeyOrchardWoods();
+    const dateRawOrchardWoods = await AsyncStorage.getItem(
+      STORAGE_DAILY_REACTION_STATS_DATE_ORCHARD_WOODS,
+    );
+    const payloadRawOrchardWoods = await AsyncStorage.getItem(
+      STORAGE_DAILY_REACTION_STATS_PAYLOAD_ORCHARD_WOODS,
+    );
+
+    let currentOrchardWoods = getDefaultDailyReactionStatsOrchardWoods();
+
+    if (dateRawOrchardWoods === JSON.stringify(todayOrchardWoods) && payloadRawOrchardWoods) {
+      try {
+        const parsedOrchardWoods = JSON.parse(
+          payloadRawOrchardWoods,
+        ) as DailyReactionStatsOrchardWoods;
+        if (
+          parsedOrchardWoods &&
+          typeof parsedOrchardWoods.totalStops === 'number' &&
+          typeof parsedOrchardWoods.greenStops === 'number' &&
+          typeof parsedOrchardWoods.redStops === 'number' &&
+          typeof parsedOrchardWoods.currentPerfectStreak === 'number' &&
+          typeof parsedOrchardWoods.bestPerfectStreak === 'number'
+        ) {
+          currentOrchardWoods = parsedOrchardWoods;
+        }
+      } catch {}
+    }
+
+    const nextOrchardWoods: DailyReactionStatsOrchardWoods = {
+      ...currentOrchardWoods,
+      totalStops: currentOrchardWoods.totalStops + 1,
+      greenStops:
+        currentOrchardWoods.greenStops + (zoneOrchardWoods === 'good' ? 1 : 0),
+      redStops:
+        currentOrchardWoods.redStops + (zoneOrchardWoods === 'bad' ? 1 : 0),
+      currentPerfectStreak:
+        zoneOrchardWoods === 'good'
+          ? currentOrchardWoods.currentPerfectStreak + 1
+          : 0,
+      bestPerfectStreak:
+        zoneOrchardWoods === 'good'
+          ? Math.max(
+              currentOrchardWoods.bestPerfectStreak,
+              currentOrchardWoods.currentPerfectStreak + 1,
+            )
+          : currentOrchardWoods.bestPerfectStreak,
+    };
+
+    await AsyncStorage.setItem(
+      STORAGE_DAILY_REACTION_STATS_DATE_ORCHARD_WOODS,
+      JSON.stringify(todayOrchardWoods),
+    );
+    await AsyncStorage.setItem(
+      STORAGE_DAILY_REACTION_STATS_PAYLOAD_ORCHARD_WOODS,
+      JSON.stringify(nextOrchardWoods),
+    );
+  } catch {}
 }
 
 export default function GameScreen() {
@@ -649,6 +742,7 @@ export default function GameScreen() {
     const zoneOrchardWoods: 'good' | 'neutral' | 'bad' =
       stopAt <= g ? 'good' : stopAt <= g + y ? 'neutral' : 'bad';
     setOutcomeOrchardWoods(zoneOrchardWoods);
+    void updateDailyReactionStatsOrchardWoods(zoneOrchardWoods);
 
     const isRiskOrchardWoods = scaleModeOrchardWoods === 'risk';
     const multOrchardWoods = isRiskOrchardWoods ? 2 : 1;
@@ -802,7 +896,7 @@ export default function GameScreen() {
         {isIntroScreenOrchardWoods ? (
           <View style={orchardWoodsIntroOverlay}>
             <Image
-              source={require('../../assets/images/introimg1.png')}
+              source={require('../../assets/images/iconw.png')}
               style={orchardWoodsIntroLogo}
               resizeMode="contain"
             />
@@ -1530,6 +1624,7 @@ const orchardWoodsIntroLogo = {
   width: 226,
   height: 230,
   marginBottom: 22,
+  borderRadius: 42,
 };
 
 const orchardWoodsHowRoundTitle = {

@@ -110,8 +110,8 @@ const Loader: React.FC = () => {
           }}
         >
           <Image
-            source={require('../../assets/images/loaderimg.png')}
-            style={{ width: 250, height: 250 }}
+            source={require('../../assets/images/iconw.png')}
+            style={{ width: 250, height: 250, borderRadius: 42 }}
           />
         </View>
 

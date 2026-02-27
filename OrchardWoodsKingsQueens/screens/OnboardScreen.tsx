@@ -15,7 +15,7 @@ type RootStackParamListOrchardWoods = {
 };
 
 const ongoalimagesOrchardWoods = [
-  require('../../assets/images/introimg1.png'),
+  require('../../assets/images/iconw.png'),
   require('../../assets/images/introimg2.png'),
   require('../../assets/images/introimg3.png'),
   require('../../assets/images/introimg4.png'),
@@ -101,6 +101,7 @@ const OnboardScreen: React.FC = () => {
               currentIndexOrchardWoods === 0 && {
                 width: 220,
                 height: 220,
+                borderRadius: 42,
               },
               {
                 marginTop: heightOrchardWoods * 0.1,
