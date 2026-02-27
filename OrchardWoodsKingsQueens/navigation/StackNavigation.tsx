@@ -22,7 +22,7 @@ const StackNavigation: React.FC = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Loader" component={Loader} />
-      <Stack.Screen name="OnboardScreen" component={OnboardScren} />
+      <Stack.Screen name="OnboardScreen" component={OnboardScreen} />
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
       <Stack.Screen name="GameScreen" component={GameScreen} />
       <Stack.Screen name="HeroesScreen" component={HeroesScreen} />
