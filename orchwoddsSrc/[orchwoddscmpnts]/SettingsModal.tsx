@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { NeonModalSquare } from '../screens/HomeScreen';
+import { NeonModalSquare } from '../orchwoddsscrnns/HomeScreen';
 
 type SettingsModalProps = {
   setupVisible: boolean;

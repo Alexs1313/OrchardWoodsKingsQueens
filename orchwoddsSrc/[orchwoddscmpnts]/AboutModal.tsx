@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
-import { NeonModalTall } from '../screens/HomeScreen';
+import { NeonModalTall } from '../orchwoddsscrnns/HomeScreen';
 
 type AboutModalProps = {
   rulesVisible: boolean;

@@ -1,3 +1,5 @@
+// onboarding screen
+
 import React, { useState as useStateOrchardWoods } from 'react';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import {

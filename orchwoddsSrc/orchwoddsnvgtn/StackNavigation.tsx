@@ -1,13 +1,13 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import Loader from '../components/Loader';
-import OnboardScreen from '../screens/OnboardScreen';
-import HomeScreen from '../screens/HomeScreen';
-import GameScreen from '../screens/GameScreen';
-import HeroesScreen from '../screens/HeroesScreen';
-import Orchwddscollectn from '../screens/Orchwddscollectn';
-import OrchwddscollectnDetail from '../screens/OrchwddscollectnDetail';
-import Orchrdwddscollectn from '../screens/Orchrdwddscollectn';
+import Loader from '../[orchwoddscmpnts]/Loader';
+import OnboardScreen from '../orchwoddsscrnns/OnboardScreen';
+import HomeScreen from '../orchwoddsscrnns/HomeScreen';
+import GameScreen from '../orchwoddsscrnns/GameScreen';
+import HeroesScreen from '../orchwoddsscrnns/HeroesScreen';
+import Orchwddscollectn from '../orchwoddsscrnns/Orchwddscollectn';
+import OrchwddscollectnDetail from '../orchwoddsscrnns/OrchwddscollectnDetail';
+import Orchrdwddscollectn from '../orchwoddsscrnns/Orchrdwddscollectn';
 
 export type RootStackParamList = {
   Loader: undefined;

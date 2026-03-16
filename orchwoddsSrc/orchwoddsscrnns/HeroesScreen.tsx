@@ -1,3 +1,12 @@
+// heroes screen
+
+import {
+  useFocusEffect,
+  useNavigation,
+  type NavigationProp,
+} from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
+
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Image,
@@ -8,16 +17,12 @@ import {
   Vibration,
   View,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  useFocusEffect,
-  useNavigation,
-  type NavigationProp,
-} from '@react-navigation/native';
-import Toast from 'react-native-toast-message';
 
-import { HEROES, type Hero, type HeroId } from '../data/heroes';
-import { useStore } from '../store/context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { HEROES, type Hero, type HeroId } from '../orchwoddsdtta/heroes';
+
+import { useStore } from '../orchwoddsstrgg/context';
 
 type RootStackParamListOrchardWoods = {
   HomeScreen: undefined;

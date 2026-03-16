@@ -1,10 +1,10 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
-import StackNavigation from './OrchardWoodsKingsQueens/navigation/StackNavigation';
-import { ContextProvider } from './OrchardWoodsKingsQueens/store/context';
+import StackNavigation from './orchwoddsSrc/orchwoddsnvgtn/StackNavigation';
+import { ContextProvider } from './orchwoddsSrc/orchwoddsstrgg/context';
 
-const App: React.FC = () => {
+const OrchwApp: React.FC = () => {
   return (
     <NavigationContainer>
       <ContextProvider>
@@ -15,4 +15,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default OrchwApp;

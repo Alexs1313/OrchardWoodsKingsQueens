@@ -1,3 +1,9 @@
+// stories screen
+
+import {
+  LEGENDS_ORCHARD_WOODS,
+  STORAGE_SAVED_LEGENDS_ORCHARD_WOODS,
+} from '../orchwoddsdtta/legendsData';
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   Image,
@@ -13,10 +19,6 @@ import {
   useNavigation,
   type NavigationProp,
 } from '@react-navigation/native';
-import {
-  LEGENDS_ORCHARD_WOODS,
-  STORAGE_SAVED_LEGENDS_ORCHARD_WOODS,
-} from '../data/legendsData';
 
 type RootStackParamListOrchardWoods = {
   HomeScreen: undefined;

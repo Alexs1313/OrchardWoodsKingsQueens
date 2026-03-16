@@ -1,3 +1,8 @@
+// collection screen
+
+import Share from 'react-native-share';
+
+import { captureRef } from 'react-native-view-shot';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Image,
@@ -7,14 +12,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+
 import {
   useFocusEffect,
   useNavigation,
   type NavigationProp,
 } from '@react-navigation/native';
+
 import RNFS from 'react-native-fs';
-import Share from 'react-native-share';
-import { captureRef } from 'react-native-view-shot';
 
 import {
   loadCoins,

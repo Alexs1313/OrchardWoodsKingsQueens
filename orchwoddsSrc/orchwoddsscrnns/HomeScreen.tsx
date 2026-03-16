@@ -1,3 +1,10 @@
+// home screen
+
+import SettingsModal from '../[orchwoddscmpnts]/SettingsModal';
+import { useStore } from '../orchwoddsstrgg/context';
+
+import { unlockRandomPiece } from '../utils/collectionStorage';
+
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Image,
@@ -11,19 +18,19 @@ import {
   Modal,
   Linking,
 } from 'react-native';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   useFocusEffect,
   useNavigation,
   type NavigationProp,
 } from '@react-navigation/native';
+
 import Toast from 'react-native-toast-message';
+
 import Sound from 'react-native-sound';
 
-import AboutModal from '../components/AboutModal';
-import SettingsModal from '../components/SettingsModal';
-import { useStore } from '../store/context';
-import { unlockRandomPiece } from '../utils/collectionStorage';
+import AboutModal from '../[orchwoddscmpnts]/AboutModal';
 
 type RootStackParamListOrchardWoods = {
   HomeScreen: undefined;
@@ -904,7 +911,7 @@ const HomeScreen: React.FC = () => {
         />
 
         <Modal
-          visible={dailyChallengeVisibleOrchardWoods}
+          visible={dailyChallengeVisibleOrchardWoods && false}
           transparent
           animationType="fade"
         >

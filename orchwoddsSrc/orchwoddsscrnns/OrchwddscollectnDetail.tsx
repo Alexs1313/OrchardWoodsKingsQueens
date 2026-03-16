@@ -1,4 +1,12 @@
+// story details screen
+
+import {
+  LEGENDS_ORCHARD_WOODS,
+  STORAGE_SAVED_LEGENDS_ORCHARD_WOODS,
+} from '../orchwoddsdtta/legendsData';
+
 import React, { useCallback, useMemo, useState } from 'react';
+
 import {
   Image,
   ImageBackground,
@@ -8,6 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   useFocusEffect,
@@ -16,10 +25,6 @@ import {
   type NavigationProp,
   type RouteProp,
 } from '@react-navigation/native';
-import {
-  LEGENDS_ORCHARD_WOODS,
-  STORAGE_SAVED_LEGENDS_ORCHARD_WOODS,
-} from '../data/legendsData';
 
 type RootStackParamListOrchardWoods = {
   HomeScreen: undefined;
