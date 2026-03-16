@@ -722,56 +722,99 @@ const HomeScreen: React.FC = () => {
             >
               <ImageBackground
                 source={require('../../assets/images/homemainBtn.png')}
-                style={[orchardWoodsMenuButton, { width: 206, height: 80 }]}
+                style={[orchardWoodsMenuButton, { width: 236, height: 94 }]}
                 resizeMode="stretch"
               >
-                <Text style={orchardWoodsButtonTitle}>Begin the Journey</Text>
+                <Image
+                  source={require('../../assets/images/orchrdwddsbgnn.png')}
+                />
+                <Text style={[orchardWoodsButtonTitle, { width: 100 }]}>
+                  Begin the Journey
+                </Text>
               </ImageBackground>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              activeOpacity={0.85}
-              style={orchardWoodsLevelBtnWrap}
-              onPress={() => navigationOrchardWoods.navigate('HeroesScreen')}
+            <View
+              style={{
+                flexDirection: 'row',
+                gap: 10,
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+                marginTop: 20,
+              }}
             >
-              <ImageBackground
-                source={require('../../assets/images/homemainBtn.png')}
-                style={orchardWoodsMenuButton}
-                resizeMode="stretch"
+              <TouchableOpacity
+                activeOpacity={0.85}
+                style={orchardWoodsLevelBtnWrap}
+                onPress={() =>
+                  navigationOrchardWoods.navigate('Orchwddscollectn')
+                }
               >
-                <Text style={orchardWoodsButtonTitle}>Heroes</Text>
-              </ImageBackground>
-            </TouchableOpacity>
+                <ImageBackground
+                  source={require('../../assets/images/homemainBtn.png')}
+                  style={orchardWoodsMenuButton}
+                  resizeMode="stretch"
+                >
+                  <Image
+                    source={require('../../assets/images/orchrdwddslgs.png')}
+                  />
+                  <Text style={orchardWoodsButtonTitle}>Legends</Text>
+                </ImageBackground>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              activeOpacity={0.85}
-              style={orchardWoodsLevelBtnWrap}
-              onPress={() =>
-                navigationOrchardWoods.navigate('CollectionScreen')
-              }
-            >
-              <ImageBackground
-                source={require('../../assets/images/homemainBtn.png')}
-                style={orchardWoodsMenuButton}
-                resizeMode="stretch"
+              <TouchableOpacity
+                activeOpacity={0.85}
+                style={orchardWoodsLevelBtnWrap}
+                onPress={() => navigationOrchardWoods.navigate('HeroesScreen')}
               >
-                <Text style={orchardWoodsButtonTitle}>Collection</Text>
-              </ImageBackground>
-            </TouchableOpacity>
+                <ImageBackground
+                  source={require('../../assets/images/homemainBtn.png')}
+                  style={orchardWoodsMenuButton}
+                  resizeMode="stretch"
+                >
+                  <Image
+                    source={require('../../assets/images/orchrdwddshrrs.png')}
+                  />
+                  <Text style={orchardWoodsButtonTitle}>Heroes</Text>
+                </ImageBackground>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              activeOpacity={0.85}
-              style={orchardWoodsLevelBtnWrap}
-              onPress={() => setSetupVisibleOrchardWoods(true)}
-            >
-              <ImageBackground
-                source={require('../../assets/images/homemainBtn.png')}
-                style={orchardWoodsMenuButton}
-                resizeMode="stretch"
+              <TouchableOpacity
+                activeOpacity={0.85}
+                style={orchardWoodsLevelBtnWrap}
+                onPress={() =>
+                  navigationOrchardWoods.navigate('Orchrdwddscollectn')
+                }
               >
-                <Text style={orchardWoodsButtonTitle}>Settings</Text>
-              </ImageBackground>
-            </TouchableOpacity>
+                <ImageBackground
+                  source={require('../../assets/images/homemainBtn.png')}
+                  style={orchardWoodsMenuButton}
+                  resizeMode="stretch"
+                >
+                  <Image
+                    source={require('../../assets/images/orchrdwddcoll.png')}
+                  />
+                  <Text style={orchardWoodsButtonTitle}>Collection</Text>
+                </ImageBackground>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={0.85}
+                style={orchardWoodsLevelBtnWrap}
+                onPress={() => setSetupVisibleOrchardWoods(true)}
+              >
+                <ImageBackground
+                  source={require('../../assets/images/homemainBtn.png')}
+                  style={orchardWoodsMenuButton}
+                  resizeMode="stretch"
+                >
+                  <Image
+                    source={require('../../assets/images/orchrdwddsset.png')}
+                  />
+                  <Text style={orchardWoodsButtonTitle}>Settings</Text>
+                </ImageBackground>
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* Daily chest area */}
@@ -1102,9 +1145,13 @@ const orchardWoodsLevelsStack = {
 };
 
 const orchardWoodsMenuButton = {
-  width: 192,
+  width: 172,
   height: 70,
   justifyContent: 'center' as const,
+  flexDirection: 'row' as const,
+  alignItems: 'center' as const,
+
+  gap: 10,
 };
 
 const orchardWoodsLevelBtnWrap = {

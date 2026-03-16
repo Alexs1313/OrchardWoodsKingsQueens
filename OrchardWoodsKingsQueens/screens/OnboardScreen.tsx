@@ -15,17 +15,18 @@ type RootStackParamListOrchardWoods = {
 };
 
 const ongoalimagesOrchardWoods = [
-  require('../../assets/images/iconw.png'),
+  require('../../assets/images/orchrdwddson1.png'),
   require('../../assets/images/introimg2.png'),
   require('../../assets/images/introimg3.png'),
   require('../../assets/images/introimg4.png'),
+  require('../../assets/images/orchrdwddson2.png'),
 ] as const;
 
 const onboardDataOrchardWoods = [
   {
     title: 'Enter Orchard Woods',
     descr:
-      'Step into a fairytale berry forest where glowing branches hide gentle magic.',
+      'Step into a magical berry forest where every run feels like a new story.',
     buttonLabel: 'Next',
   },
   {
@@ -44,6 +45,12 @@ const onboardDataOrchardWoods = [
     title: 'Collect Artifacts',
     descr:
       'Complete runs to unlock puzzle pieces and reveal beautiful illustrations.',
+    buttonLabel: 'Next',
+  },
+  {
+    title: 'Berry Kingdom Legends',
+    descr:
+      'Discover ancient stories hidden across the kingdom and uncover the magic behind every adventure.',
     buttonLabel: 'Begin',
   },
 ] as const;
@@ -57,7 +64,7 @@ const OnboardScreen: React.FC = () => {
     useStateOrchardWoods<number>(0);
 
   const handleNextOrchardWoods = () => {
-    if (currentIndexOrchardWoods < 3) {
+    if (currentIndexOrchardWoods < 4) {
       setCurrentIndexOrchardWoods(prev => prev + 1);
     } else {
       navigationOrchardWoods.navigate('HomeScreen');
@@ -98,11 +105,7 @@ const OnboardScreen: React.FC = () => {
             source={ongoalimagesOrchardWoods[currentIndexOrchardWoods]}
             style={[
               orchardWoodsMainImg,
-              currentIndexOrchardWoods === 0 && {
-                width: 220,
-                height: 220,
-                borderRadius: 42,
-              },
+
               {
                 marginTop: heightOrchardWoods * 0.1,
                 marginBottom: heightOrchardWoods * 0.12,

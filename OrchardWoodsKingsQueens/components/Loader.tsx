@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Image, ScrollView, ImageBackground } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { ensureInitialCollectionDefaults } from '../utils/collectionStorage';
 
 type RootStackParamList = {
   OnboardScreen: undefined;
@@ -71,6 +72,8 @@ const Loader: React.FC = () => {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    ensureInitialCollectionDefaults().catch(() => {});
+
     timerRef.current = setTimeout(() => {
       try {
         nav.navigate('OnboardScreen');
@@ -109,10 +112,7 @@ const Loader: React.FC = () => {
             height: 650,
           }}
         >
-          <Image
-            source={require('../../assets/images/iconw.png')}
-            style={{ width: 250, height: 250, borderRadius: 42 }}
-          />
+          <Image source={require('../../assets/images/iconw.png')} />
         </View>
 
         <View style={{ position: 'absolute', bottom: 40, alignSelf: 'center' }}>

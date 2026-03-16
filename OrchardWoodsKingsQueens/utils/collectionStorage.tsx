@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const COINS_KEY = 'BK_COINS_V1';
 export const COLLECTION_KEY = 'BK_COLLECTION_V1';
+export const START_COINS_ORCHARD_WOODS = 20;
 
 export type CollectionId =
   | 'royalFruitGarden'
@@ -12,19 +13,53 @@ export type CollectionId =
 export type CollectionState = Record<CollectionId, number>;
 
 export const defaultCollectionState: CollectionState = {
-  royalFruitGarden: 0,
+  // First wallpaper is fully unlocked by default.
+  royalFruitGarden: 15,
   berryRainGlow: 0,
   berryForest: 0,
   berryCastle: 0,
 };
 
+export async function ensureInitialCollectionDefaults() {
+  try {
+    const [coinsRaw, collectionRaw] = await Promise.all([
+      AsyncStorage.getItem(COINS_KEY),
+      AsyncStorage.getItem(COLLECTION_KEY),
+    ]);
+
+    const writes: Array<Promise<void>> = [];
+
+    if (coinsRaw === null) {
+      writes.push(
+        AsyncStorage.setItem(
+          COINS_KEY,
+          JSON.stringify(START_COINS_ORCHARD_WOODS),
+        ),
+      );
+    }
+
+    if (collectionRaw === null) {
+      writes.push(
+        AsyncStorage.setItem(
+          COLLECTION_KEY,
+          JSON.stringify(defaultCollectionState),
+        ),
+      );
+    }
+
+    if (writes.length > 0) {
+      await Promise.all(writes);
+    }
+  } catch {}
+}
+
 export async function loadCoins(): Promise<number> {
   try {
     const raw = await AsyncStorage.getItem(COINS_KEY);
-    const n = raw ? Number(JSON.parse(raw)) : 0;
-    return Number.isFinite(n) ? n : 0;
+    const n = raw ? Number(JSON.parse(raw)) : START_COINS_ORCHARD_WOODS;
+    return Number.isFinite(n) ? n : START_COINS_ORCHARD_WOODS;
   } catch {
-    return 0;
+    return START_COINS_ORCHARD_WOODS;
   }
 }
 

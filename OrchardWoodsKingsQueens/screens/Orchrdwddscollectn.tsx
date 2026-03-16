@@ -89,7 +89,7 @@ const CARDS_ORCHARD_WOODS: CardCfgOrchardWoods[] = [
   },
 ];
 
-export default function CollectionScreen() {
+export default function Orchrdwddscollectn() {
   const navigationOrchardWoods =
     useNavigation<NavigationProp<RootStackParamListOrchardWoods>>();
 
