@@ -596,7 +596,7 @@ const HomeScreen: React.FC = () => {
   const handleShareOrchardWoods = async () => {
     try {
       Linking.openURL(
-        'https://apps.apple.com/us/app/qu%D0%B5%D0%B5ns%D0%BC%D1%96nn-kings-woods/id6758612386',
+        'https://apps.apple.com/us/app/queensm%D1%96nn-kings-w%D0%BEods/id6760646860',
       );
     } catch {}
   };
